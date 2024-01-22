@@ -2,9 +2,12 @@ module Scattensor
 
 # Write your package code here.
 
-include("prova1.jl")
-include("prova2.jl")
-
-export myfunc1, myfunc2
+include("models.jl")
+include("notation.jl")
+include("bloch.jl")
+include("interpolation.jl")
+include("operators.jl")
+include("tensor_networks.jl")
+include("system.jl")
 
 end
