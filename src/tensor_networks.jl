@@ -1,4 +1,3 @@
-using Scattensor
 using ITensors
 using ITensorTDVP
 using ITensorGLMakie
@@ -15,6 +14,7 @@ function entanglement_entropy(ψ::MPS)::Vector{Float64}
     Sᵥ(j) = entanglement_entropy(ψ, j)
     return [Sᵥ(j) for j in 1:L-1]
 end
+export entanglement_entropy
 
 # Electric Hamiltonian Opsum
 function OsHE()::OpSum
@@ -95,114 +95,112 @@ function OsNWp(j₀::Integer, k::Float64, σ::Float64, L::Integer, ϵ::Float64):
     return H
 end
 
-# Naive wavepacket creation operator OpSum
+function testTDVP()
+    # System parameters
+    L = 100 # Number of sites
+    λ = 2 # Coupling constant
+    jⁱᵐᵖ = Integer(round(L/2)) # Impurity position
 
-println("TNs stuff.")
+    # Wavepacket parameters
+    jᵂᴾ = Integer(round(L/4)) # Wavevector initial average position
+    kᵂᴾ = π/2 # Wavevector initial average momentum
+    σᵂᴾ = 2.0 # Wavevector initial standard deviation
+    ϵᵂᴾ = 10^(-10) # Wavevector cutoff for the creation operator
 
-# System parameters
-L = 100 # Number of sites
-λ = 2 # Coupling constant
-jⁱᵐᵖ = Integer(round(L/2)) # Impurity position
+    # DMRG parameters
+    Nᴰᴹᴿᴳ = 10 # Number of sweeps
+    χᴰᴹᴿᴳ = 100 # Maximum bond dimension
+    ϵᴰᴹᴿᴳ = 1e-10 # Cutoff
 
-# Wavepacket parameters
-jᵂᴾ = Integer(round(L/4)) # Wavevector initial average position
-kᵂᴾ = π/2 # Wavevector initial average momentum
-σᵂᴾ = 2.0 # Wavevector initial standard deviation
-ϵᵂᴾ = 10^(-10) # Wavevector cutoff for the creation operator
+    # Simulation parameters
+    χᵀᴰⱽᴾ = 100 # Maximum bond dimension for the time evolution
+    ϵᵀᴰⱽᴾ = 1e-10 # Cutoff for the time evolution
+    dt = 0.5 # Time step
+    Δt = 130.0 # Total time of simulation
 
-# DMRG parameters
-Nᴰᴹᴿᴳ = 10 # Number of sweeps
-χᴰᴹᴿᴳ = 100 # Maximum bond dimension
-ϵᴰᴹᴿᴳ = 1e-10 # Cutoff
+    # We create the sites and the Hamiltonian
+    os = λ * OsHE() + (1 - λ) * OsHB() + (λ * OsHEimp(jⁱᵐᵖ) + (1 - λ) * OsHBimp(jⁱᵐᵖ))
+    sites = siteinds("S=1/2", L)
+    H = MPO(os, sites)
 
-# Simulation parameters
-χᵀᴰⱽᴾ = 100 # Maximum bond dimension for the time evolution
-ϵᵀᴰⱽᴾ = 1e-10 # Cutoff for the time evolution
-dt = 0.5 # Time step
-Δt = 130.0 # Total time of simulation
+    # We find the groundstate
+    ℰ₀,ψ₀ = dmrg(H, randomMPS(sites); 
+                nsweeps = Nᴰᴹᴿᴳ, 
+                maxdim = χᴰᴹᴿᴳ, 
+                cutoff = ϵᴰᴹᴿᴳ)
 
-# We create the sites and the Hamiltonian
-os = λ * OsHE() + (1 - λ) * OsHB() + (λ * OsHEimp(jⁱᵐᵖ) + (1 - λ) * OsHBimp(jⁱᵐᵖ))
-sites = siteinds("S=1/2", L)
-H = MPO(os, sites)
+    # We generate the creation operator and we apply it to the groundstate
+    Loc = MPO(OsNWp(jᵂᴾ, kᵂᴾ, σᵂᴾ, L, ϵᵂᴾ), sites)
+    ψ = noprime(Loc * ψ₀)
+    normalize!(ψ)
 
-# We find the groundstate
-ℰ₀,ψ₀ = dmrg(H, randomMPS(sites); 
-            nsweeps = Nᴰᴹᴿᴳ, 
-            maxdim = χᴰᴹᴿᴳ, 
-            cutoff = ϵᴰᴹᴿᴳ)
+    # We time-evolve the system
+    function tdvp_time_evolution(
+        H::MPO,
+        ψ::MPS,
+        ψ₀::MPS,
+        dt::Float64,
+        Δt::Float64
+        )
 
-# We generate the creation operator and we apply it to the groundstate
-Loc = MPO(OsNWp(jᵂᴾ, kᵂᴾ, σᵂᴾ, L, ϵᵂᴾ), sites)
-ψ = noprime(Loc * ψ₀)
-normalize!(ψ)
+        N = Integer(Δt / dt) # Number of steps
 
-# We time-evolve the system
-function tdvp_time_evolution(
-    H::MPO,
-    ψ::MPS,
-    ψ₀::MPS,
-    dt::Float64,
-    Δt::Float64
-    )
+        # We create the list of times 
+        times = [n * dt for n in 1:N]
+        positions = [x for x in 2:L-1]
 
-    N = Integer(Δt / dt) # Number of steps
+        # We create a 2D array E of dimensions (N, L-2)
+        En = zeros(N, L-2)
+        EnLog = zeros(N, L-2)
+        Linkdims = zeros(N, L-2)
+        Maxlinkdim = zeros(N)
 
-    # We create the list of times 
-    times = [n * dt for n in 1:N]
-    positions = [x for x in 2:L-1]
+        for n in 1:N
+            ψ = tdvp(H, ψ, -im * dt, maxlinkdim = 100, cutoff = 1e-10)
+            normalize!(ψ)
 
-    # We create a 2D array E of dimensions (N, L-2)
-    En = zeros(N, L-2)
-    EnLog = zeros(N, L-2)
-    Linkdims = zeros(N, L-2)
-    Maxlinkdim = zeros(N)
+            timeElapsed = @elapsed begin
+            for j in 2:(L-1)
+                locEn = λ * OsHE(j) + (1 - λ) * OsHB(j)
+                A = MPO(locEn, sites)
+                ComputedLocEn = real(inner(ψ', A, ψ)) - real(inner(ψ₀', A, ψ₀))
+                En[n,j-1] = ComputedLocEn
+                EnLog[n,j-1] = log10(abs(ComputedLocEn))
+                Linkdims[n,j-1] = linkdim(ψ,j)
+                Maxlinkdim[n] = maxlinkdim(ψ)
+            end
+            end
 
-    for n in 1:N
-        ψ = tdvp(H, ψ, -im * dt, maxlinkdim = 100, cutoff = 1e-10)
-        normalize!(ψ)
-
-        timeElapsed = @elapsed begin
-        for j in 2:(L-1)
-            locEn = λ * OsHE(j) + (1 - λ) * OsHB(j)
-            A = MPO(locEn, sites)
-            ComputedLocEn = real(inner(ψ', A, ψ)) - real(inner(ψ₀', A, ψ₀))
-            En[n,j-1] = ComputedLocEn
-            EnLog[n,j-1] = log10(abs(ComputedLocEn))
-            Linkdims[n,j-1] = linkdim(ψ,j)
-            Maxlinkdim[n] = maxlinkdim(ψ)
+            # Print information
+            println("Step ", n, " of ", N, " completed.")
+            println("Maximum link dimension of MPS: ", maxlinkdim(ψ))
+            println("Relative Energy: ", real(inner(ψ', H, ψ) - inner(ψ₀', H, ψ₀)))
+            println("Estimated time remained: ", timeElapsed * (N - n), " seconds.")
         end
-        end
 
-        # Print information
-        println("Step ", n, " of ", N, " completed.")
-        println("Maximum link dimension of MPS: ", maxlinkdim(ψ))
-        println("Relative Energy: ", real(inner(ψ', H, ψ) - inner(ψ₀', H, ψ₀)))
-        println("Estimated time remained: ", timeElapsed * (N - n), " seconds.")
+        # heatmap(positions, times, En)
+        # savefig("simulation_output/En.png")
+
+        # heatmap(positions, times, EnLog)
+        # savefig("simulation_output/EnLog.png")
+
+        # heatmap(positions, times, Linkdims)
+        # savefig("simulation_output/Linkdims.png")
+
+        titleString = "L = $L, λ = $λ, jⁱᵐᵖ = $jⁱᵐᵖ, jᵂᴾ = $jᵂᴾ, kᵂᴾ = $kᵂᴾ,
+                        σᵂᴾ = $σᵂᴾ, ϵᵂᴾ = $ϵᵂᴾ, Nᴰᴹᴿᴳ = $Nᴰᴹᴿᴳ, χᴰᴹᴿᴳ ≤ $χᴰᴹᴿᴳ,
+                        ϵᴰᴹᴿᴳ = $ϵᴰᴹᴿᴳ, χᵀᴰⱽᴾ ≤ $χᵀᴰⱽᴾ, ϵᵀᴰⱽᴾ = $ϵᵀᴰⱽᴾ, dt = $dt, Δt = $Δt"
+
+        l = @layout [grid(2,2); b{0.2h}]
+
+        title = plot(title = titleString, grid = false, showaxis = false)
+        p1 = heatmap(positions, times, En, title = "Energy density")
+        p2 = heatmap(positions, times, EnLog, title = "Log10 of Energy dens.")
+        p3 = heatmap(positions, times, Linkdims, title = "Link dims")
+        p4 = plot(times, Maxlinkdim, title = "Max link dims")
+        plot(p1, p2, p3, p4, title, layout = l, dpi = 300, size=(1000, 1000))
+        savefig("simulation_output/All.png")
     end
 
-    # heatmap(positions, times, En)
-    # savefig("simulation_output/En.png")
-
-    # heatmap(positions, times, EnLog)
-    # savefig("simulation_output/EnLog.png")
-
-    # heatmap(positions, times, Linkdims)
-    # savefig("simulation_output/Linkdims.png")
-
-    titleString = "L = $L, λ = $λ, jⁱᵐᵖ = $jⁱᵐᵖ, jᵂᴾ = $jᵂᴾ, kᵂᴾ = $kᵂᴾ,
-                    σᵂᴾ = $σᵂᴾ, ϵᵂᴾ = $ϵᵂᴾ, Nᴰᴹᴿᴳ = $Nᴰᴹᴿᴳ, χᴰᴹᴿᴳ ≤ $χᴰᴹᴿᴳ,
-                    ϵᴰᴹᴿᴳ = $ϵᴰᴹᴿᴳ, χᵀᴰⱽᴾ ≤ $χᵀᴰⱽᴾ, ϵᵀᴰⱽᴾ = $ϵᵀᴰⱽᴾ, dt = $dt, Δt = $Δt"
-
-    l = @layout [grid(2,2); b{0.2h}]
-
-    title = plot(title = titleString, grid = false, showaxis = false)
-    p1 = heatmap(positions, times, En, title = "Energy density")
-    p2 = heatmap(positions, times, EnLog, title = "Log10 of Energy dens.")
-    p3 = heatmap(positions, times, Linkdims, title = "Link dims")
-    p4 = plot(times, Maxlinkdim, title = "Max link dims")
-    plot(p1, p2, p3, p4, title, layout = l, dpi = 300, size=(1000, 1000))
-    savefig("simulation_output/All.png")
+    tdvp_time_evolution(H, ψ, ψ₀, dt, Δt)
 end
-
-tdvp_time_evolution(H, ψ, ψ₀, dt, Δt)

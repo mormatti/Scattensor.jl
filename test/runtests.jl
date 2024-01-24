@@ -1,6 +1,8 @@
 using Scattensor
-using Test
 
 @testset "Scattensor.jl" begin
-    println(Scattensor.myfunc(1))
+    println("Testing Scattensor.jl")
+
+    T = translation_operator(3, 2)
+    println(T)
 end

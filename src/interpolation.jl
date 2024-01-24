@@ -93,3 +93,4 @@ function interpolate(
     plot(xax, cp, xaxis=:log, yaxis=:log)
     savefig("data/coefficients.png")
 end
+export interpolate

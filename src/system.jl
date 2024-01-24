@@ -27,18 +27,22 @@ mutable struct ExactDiagSystem
     # The Bloch states of the first band
     first_band_states           :: Union{Vector{Vector{ComplexF64}}, Missing}
 end
+# export later
 
 function ExactDiagSystem(L::Integer, d::Integer)::ExactDiagSystem
     𝐓::Matrix{ComplexF64} = translation_operator(L, d)
     𝒮 = ExactDiagSystem(L,d,missing,𝐓,missing,missing,missing,missing,missing,missing,missing)
     return 𝒮
 end
+export ExactDiagSystem
 
 presence_𝐇(𝒮::ExactDiagSystem) = !ismissing(𝒮.hamiltonian_operator)
+export presence_𝐇
 
 presence_eigenstates(𝒮::ExactDiagSystem) = !ismissing(𝒮.eigenstates)
+export presence_eigenstates
 
-check_translational_invariance(𝒮::ExactDiagSystem)
+function check_translational_invariance(𝒮::ExactDiagSystem)
     @assert presence_𝐇(𝒮) "𝐇 not already inserted."
     𝐇::Matrix{ComplexF64} = 𝒮.hamiltonian_operator
     𝐓::Matrix{ComplexF64} = 𝒮.translation_operator
@@ -50,3 +54,4 @@ check_translational_invariance(𝒮::ExactDiagSystem)
         𝒮.translational_invariance = true 
     end
 end
+export check_translational_invariance

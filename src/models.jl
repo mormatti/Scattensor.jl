@@ -7,6 +7,7 @@ mutable struct IsingModel <: Model
     transverse_field    ::Real
     longitudinal_field  ::Real
 end
+export IsingModel
 
 """Mutable struct for the Heisenberg Model."""
 mutable struct HeisenbergModel <: Model
@@ -17,3 +18,4 @@ mutable struct HeisenbergModel <: Model
     y_field             ::Real
     z_field             ::Real
 end
+export HeisenbergModel

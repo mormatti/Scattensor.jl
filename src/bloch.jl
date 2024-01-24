@@ -1,4 +1,3 @@
-using Scattensor
 using LinearAlgebra
 using Plots
 using Optim
@@ -19,7 +18,7 @@ Outputs:
 Assumptions:
 - `𝐇` must be translationally invariant, i.e. [𝐇,𝐔] = 0.
 """
-function blochStates(
+function bloch_states(
     𝐇::Matrix{ComplexF64},
     𝐔::Matrix{ComplexF64};
     check_hermiticity::Bool = false,
@@ -65,6 +64,7 @@ function blochStates(
 
     return u, h, 𝛙
 end
+export bloch_states
 
 
 """
@@ -76,7 +76,7 @@ Inputs:
 - `filename` is the name of the file (with extension) where the plot will be saved;
 - `aspectRatio` is the ratio between the width and the height of the plot (default 1:1).
 """
-function plotDispersionRelation(
+function plot_dispersion_relation(
     k::Vector{Float64},
     ℰ::Vector{Float64},
     filename::String = "plot.png", 
@@ -89,7 +89,7 @@ function plotDispersionRelation(
     plot!(size=(170,170 * aspectRatio), dpi=300) # Setting the size of the plot
     savefig(filename) # Saving the plot in a file
 end
-
+export plot_dispersion_relation
 
 """
 Finds the bloch states of the first band.
@@ -102,7 +102,7 @@ Inputs:
 Assumptions:
 - The groundstate must be non-degenerate.
 """
-function firstBandStates(
+function first_band_states(
     k::Vector{Float64},
     ℰ::Vector{Float64},
     𝛙::Vector{Vector{ComplexF64}},
@@ -143,7 +143,7 @@ function firstBandStates(
     # Returning the tuple of bloch states of the first band
     return k, ℰ, 𝛙
 end
-
+export firstBandStates
 
 """ Plots the energy density profile of the state `𝛙`.
 
@@ -159,7 +159,7 @@ Optional inputs:
 Outputs:
 - The `Vector{Real}` of the energy density profile of the state `𝛙`.
 """
-function energyDensityArray(
+function energy_density_array(
     𝛙::Vector{ComplexF64}, 
     𝐡₁::Matrix{ComplexF64}, 
     𝐓::Matrix{ComplexF64}, 
@@ -180,6 +180,7 @@ function energyDensityArray(
 
     return arr
 end
+export energy_density_array
 
 """
 Computes the maximally localized from a generic set of states.
@@ -265,6 +266,7 @@ function find_wannier(
     # We compute the maximally localized state
     return 𝓌
 end
+export find_wannier
 
 
 # function find_localized(

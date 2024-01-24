@@ -1,15 +1,5 @@
-module Operators
-
 using Scattensor
 using LinearAlgebra
-
-# Shortcuts for the module
-
-𝛔ˣ::Matrix{ComplexF64} = [0 1; 1 0]
-
-𝛔ᶻ::Matrix{ComplexF64} = [1 0; 0 -1]
-
-𝒪(args::Pair{Matrix{ComplexF64}, Int}...) = product_local_operators(𝒮, args...)
 
 """
 Generates the translation operator T for a chain of L sites with local dimension d.
@@ -64,6 +54,7 @@ Inputs:
 - args is a list of pairs (𝐚, j) where 𝐚 is the local operator written in the local 
 space (small matrix) and j is the position of the local operator 𝐚.
 """
+
 function product_local_operators(𝒮::ExactDiagSystem, args::Pair{Matrix{ComplexF64}, Int}...)::Matrix{ComplexF64}
     L = 𝒮.system_size
     d = 𝒮.local_dimension
@@ -126,6 +117,10 @@ function ising_hamiltonian(
     hᶻ::Real # The longitudinal field
     )::Matrix{ComplexF64}
 
+    𝛔ˣ::Matrix{ComplexF64} = [0 1; 1 0]
+    𝛔ᶻ::Matrix{ComplexF64} = [1 0; 0 -1]
+    𝒪(args::Pair{Matrix{ComplexF64}, Int}...) = product_local_operators(𝒮, args...)
+
     d = 𝒮.system_size
     L = 𝒮.local_dimension
 
@@ -149,6 +144,10 @@ function local_hamiltonian(
     j::Integer, # The position of the local Hamiltonian
     )::Matrix{ComplexF64}
 
+    𝛔ˣ::Matrix{ComplexF64} = [0 1; 1 0]
+    𝛔ᶻ::Matrix{ComplexF64} = [1 0; 0 -1]
+    𝒪(args::Pair{Matrix{ComplexF64}, Int}...) = product_local_operators(𝒮, args...)
+
     d = 𝒮.local_dimension
     L = 𝒮.system_size
 
@@ -163,5 +162,3 @@ function local_hamiltonian(
     return 𝒪(-J/4 * 𝛔ᶻ,j-1,𝛔ᶻ,j) - 𝒪(J/4 * 𝛔ᶻ,j,𝛔ᶻ,j+1) - 𝒪(hˣ * 𝛔ˣ + hᶻ * 𝛔ᶻ,j)
 end
 export local_hamiltonian
-
-end # module Operators

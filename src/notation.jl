@@ -1,7 +1,6 @@
-using Scattensor
 using LinearAlgebra
 
-"""A shortcut binary notation for the Krnoecher product."""
+"""A shortcut binary notation for the Kronecker product."""
 function ⊗(A, B)
     return kron(A,B)
 end
