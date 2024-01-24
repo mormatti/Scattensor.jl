@@ -1,5 +1,3 @@
-using Scattensor
-
 module Operators
 
 using Scattensor
@@ -8,9 +6,10 @@ using LinearAlgebra
 # Shortcuts for the module
 
 𝛔ˣ::Matrix{ComplexF64} = [0 1; 1 0]
+
 𝛔ᶻ::Matrix{ComplexF64} = [1 0; 0 -1]
 
-𝒪(args::Pair{Matrix{ComplexF64}, Int}...) = local_operator(𝒮, args...)
+𝒪(args::Pair{Matrix{ComplexF64}, Int}...) = product_local_operators(𝒮, args...)
 
 """
 Generates the translation operator T for a chain of L sites with local dimension d.
@@ -19,6 +18,7 @@ The system, in order to perform a translation, must be in periodic boundary cond
 
 Inputs:
 - `L` is the number of sites of the chain.
+- `d` is the local dimension.
 
 Outputs:
 - The translation operator `T`.
@@ -54,6 +54,7 @@ function translation_operator(
 
     return 𝐓
 end
+export translation_operator
 
 """
 Generates the whole matrix corresponding to the action of a product of local operators.
@@ -63,7 +64,7 @@ Inputs:
 - args is a list of pairs (𝐚, j) where 𝐚 is the local operator written in the local 
 space (small matrix) and j is the position of the local operator 𝐚.
 """
-function local_operator(𝒮::ExactDiagSystem, args::Pair{Matrix{ComplexF64}, Int}...)::Matrix{ComplexF64}
+function product_local_operators(𝒮::ExactDiagSystem, args::Pair{Matrix{ComplexF64}, Int}...)::Matrix{ComplexF64}
     L = 𝒮.system_size
     d = 𝒮.local_dimension
     N = d^L
@@ -106,6 +107,7 @@ function local_operator(𝒮::ExactDiagSystem, args::Pair{Matrix{ComplexF64}, In
     # We return the matrix 𝐀
     return 𝐀
 end
+export product_local_operators
 
 
 """
@@ -131,17 +133,15 @@ function ising_hamiltonian(
 
     return sum(𝒪(-J/2 * 𝛔ᶻ,i,𝛔ᶻ,i+1) - 𝒪(hˣ*𝛔ˣ + hᶻ*𝛔ᶻ,i) for i in 1:L)
 end
+export ising_hamiltonian
 
 """
-Generates the matrix corresponding to the local Hamiltonian of the Ising model with 
-transverse and longitudinal fields.
+Generates the matrix corresponding to the local Hamiltonian of the Ising model.
 
 Inputs:
-- `j` is the position of the local Hamiltonian;
-- `J` is the coupling constant of the spins;
-- `hˣ` is the transverse field;
-- `hᶻ` is the longitudinal field;
-- `L` is the number of sites of the chain.
+- `𝒮` is the quantum system;
+- `ℳ` is an instance of IsingModel;
+- `j` is the position of the local Hamiltonian.
 """
 function local_hamiltonian(
     𝒮::ExactDiagSystem, # The quantum system
@@ -151,14 +151,17 @@ function local_hamiltonian(
 
     d = 𝒮.local_dimension
     L = 𝒮.system_size
-    N = d^L
+
+    @assert (d == 2) "The local dimension must be 2 in the Ising Model."
+
+    j = j ↻ L
+
     J = ℳ.spin_interaction
     hˣ = ℳ.transverse_field
     hᶻ = ℳ.longitudinal_field
 
-    @assert (d == 2) "The local dimension must be 2 in the Ising Model."
-
     return 𝒪(-J/4 * 𝛔ᶻ,j-1,𝛔ᶻ,j) - 𝒪(J/4 * 𝛔ᶻ,j,𝛔ᶻ,j+1) - 𝒪(hˣ * 𝛔ˣ + hᶻ * 𝛔ᶻ,j)
 end
+export local_hamiltonian
 
 end # module Operators

@@ -1,2 +1,2 @@
-using Revise
-using Scattensor
+using ITensors
+using Plots
