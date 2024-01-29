@@ -1,4 +1,4 @@
-"""Abstract type for a general model."""
+"""Insert the description of the struct."""
 abstract type Model end
 
 """Mutable struct for the Ising Model."""

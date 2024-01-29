@@ -1,15 +1,29 @@
 module Scattensor
 
-# Write your package code here.
+    # Using  
+    using ITensors, ITensorTDVP, ITensorGLMakie
+    using LinearAlgebra, LinearSolve
+    using Optim
+    using Plots
 
-include("system.jl")
-include("models.jl")
-include("notation.jl")
-include("bloch.jl")
-include("interpolation.jl")
-include("operators.jl")
-include("tensor_networks.jl")
+    # Types
+    include("types/exact_diag_system.jl")
+    include("types/local_operator.jl")
+    include("types/models.jl")
 
-include("test.jl")
+    # Algorithms
+    include("algorithms/bloch.jl")
+    include("algorithms/wannier.jl")
+    include("algorithms/interpolation.jl")
+    include("algorithms/translation_operator.jl")
 
-end
+    # Functions
+    include("functions/notation.jl")
+    include("functions/operators.jl")
+    include("functions/entanglement_entropy.jl")
+    include("functions/tn_evolution.jl")
+
+    # Test
+    include("test.jl")
+
+end # module Scattensor

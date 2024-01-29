@@ -1,7 +1,9 @@
 "Struct for a quantum many body system on a uniform, on a finite one-dimensional 
 lattice with periodic boundary conditions. This system uses matrices, hence
 it is not suitable for large systems. It is implemented to perform exact
-diagonalization algorithms"
+diagonalization algorithms."
+
+# TYPE DEFINITION
 
 mutable struct ExactDiagSystem
     # L, the number of sites of the chain
@@ -29,12 +31,18 @@ mutable struct ExactDiagSystem
 end
 # export later
 
+
+# CONSTRUCTORS
+
 function ExactDiagSystem(L::Integer, d::Integer)::ExactDiagSystem
     𝐓::Matrix{ComplexF64} = translation_operator(L, d)
     𝒮 = ExactDiagSystem(L,d,missing,𝐓,missing,missing,missing,missing,missing,missing,missing)
     return 𝒮
 end
 export ExactDiagSystem
+
+
+# STRUCT FUNCTIONS
 
 presence_𝐇(𝒮::ExactDiagSystem) = !ismissing(𝒮.hamiltonian_operator)
 export presence_𝐇

@@ -1,51 +1,3 @@
-using Scattensor
-using LinearAlgebra
-
-"""
-Generates the translation operator T for a chain of L sites with local dimension d.
-The system is assumed to be uniform, i.e. the local dimension is the same for all sites.
-The system, in order to perform a translation, must be in periodic boundary conditions.
-
-Inputs:
-- `L` is the number of sites of the chain.
-- `d` is the local dimension.
-
-Outputs:
-- The translation operator `T`.
-"""
-function translation_operator(
-    L::Integer, # The length of the system
-    d::Integer # The local dimension
-    )::Matrix{ComplexF64}
-
-    N::Integer = d^L
-    𝐓::Matrix{ComplexF64} = zeros(N,N)
-
-    Lst = []
-    c = 0
-    for i ∈ 1:d
-        lst = []
-        for j in 1:(N/d)
-            c = c + 1
-            push!(lst, c)
-        end
-        push!(Lst, lst)
-    end
-
-    print(Lst)
-
-    for indL in eachindex(Lst)
-        lst = Lst[indL]
-        for ind in eachindex(lst)
-            j = lst[ind]
-            𝐓[j, ((d*(j-1)+1)%N) + indL - 1] = 1
-        end
-    end
-
-    return 𝐓
-end
-export translation_operator
-
 """
 Generates the whole matrix corresponding to the action of a product of local operators.
 
@@ -54,18 +6,17 @@ Inputs:
 - args is a list of pairs (𝐚, j) where 𝐚 is the local operator written in the local 
 space (small matrix) and j is the position of the local operator 𝐚.
 """
-
-function product_local_operators(𝒮::ExactDiagSystem, args::Pair{Matrix{ComplexF64}, Int}...)::Matrix{ComplexF64}
+function product_local_operators(𝒮::ExactDiagSystem, args::Vararg{LocalOperator})::Matrix{ComplexF64}
     L = 𝒮.system_size
     d = 𝒮.local_dimension
     N = d^L
     # We assert that all the matrices have the same dimension of the local space
     for arg in args
-        @assert (size(arg.first) == (d, d)) "The local operator must have the same dimension of the local space."
+        @assert (size(arg.matrix) == (d, d)) "The local operator must have the same dimension of the local space."
     end
     # For each arg.second we take the mod L using ↻L
     for arg in args
-        arg.second = arg.second ↻ L
+        arg.position = arg.position ↻ L
     end
     # We consider the dxd identity matrix
     𝟙 = Matrix{ComplexF64}(I, d, d)
@@ -75,8 +26,8 @@ function product_local_operators(𝒮::ExactDiagSystem, args::Pair{Matrix{Comple
     for i in 1:L
         𝒱i = []
         for arg in args
-            if arg.second == i
-                push!(𝒱i, arg.first)
+            if arg[2] == i
+                push!(𝒱i, arg[1])
             end
         end
         # If 𝒱i has no elements, we add the identity

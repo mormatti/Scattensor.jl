@@ -1,5 +1,3 @@
-using LinearSolve
-
 """
 Interpolates a state 𝛙₁ from a state 𝛙₀, using a linear combinations of compositions
 of local operators 𝐋ⱼ.
