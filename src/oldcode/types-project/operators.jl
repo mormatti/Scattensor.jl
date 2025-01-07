@@ -6,6 +6,7 @@ Inputs:
 - args is a list of pairs (𝐚, j) where 𝐚 is the local operator written in the local 
 space (small matrix) and j is the position of the local operator 𝐚.
 """
+
 function product_local_operators(𝒮::ExactDiagSystem, args::Vararg{LocalOperator})::Matrix{ComplexF64}
     L = 𝒮.system_size
     d = 𝒮.local_dimension

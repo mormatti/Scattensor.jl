@@ -66,7 +66,7 @@ Outputs:
 - The translation operator `T`.
 """
 
-translation_operator(d::Integer,L::Integer)::Matrix{ComplexF64}
+function translation_operator(d::Integer,L::Integer)::Matrix{ComplexF64}
     N::Integer = d^L
     𝐓::Matrix{ComplexF64} = zeros(N,N)
 

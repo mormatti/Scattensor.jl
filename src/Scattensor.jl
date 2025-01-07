@@ -1,33 +1,22 @@
 module Scattensor
 
     # Using  
-    using ITensors, ITensorTDVP, ITensorGLMakie
-    using LinearAlgebra, LinearSolve
+    using ITensors, ITensorMPS
+    using LinearAlgebra
     using SparseArrays
     using Optim
     using Plots
 
-    # Types
-    include("types/exact_diag/system.jl")
-    include("types/exact_diag/operator.jl")
-    include("types/exact_diag/local_operator.jl")
-    include("types/exact_diag/state.jl")
-    include("types/exact_diag/states_set.jl")
-    include("types/models.jl")
+    include("utils/basics.jl")
+    export ⊗, ↺, printcolored
 
-    # Algorithms
-    include("algorithms/bloch.jl")
-    include("algorithms/wannier.jl")
-    include("algorithms/interpolation.jl")
-    include("algorithms/translation_operator.jl")
+    include("utils/matrices.jl")
+    export translation_operator, product_locals
 
-    # Functions
-    include("functions/notation.jl")
-    include("functions/operators.jl")
-    include("functions/entanglement_entropy.jl")
-    include("functions/tn_evolution.jl")
+    include("utils/tn_functions.jl")
+    export entanglement_entropy, reflect, translate
 
-    # Test
-    include("test.jl")
+    include("utils/disprel.jl")
+    export disprel
 
 end # module Scattensor
