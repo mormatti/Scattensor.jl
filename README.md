@@ -7,31 +7,15 @@ This package has the goal to provide functions and algorithms to simulate quasi-
 
 ### Assumptions (for the moment)
 
-Let's consider a quantum many-body system with Hilbert space $\mathcal H$ and Hamiltonian $\hat H$. We require that
+Let's consider a quantum many-body system with Hilbert space $\mathcal H$ and Hamiltonian $H$. We require that
 
-- The system 1-dimensional (space dimension);
-- The system is discrete, on a (equally spaced) lattice.
-- The system has a uniform local dimension $d$;
-- For PBC of the system, it is defined a translation operator $\hat T$ (lattice geometry);
-- $\hat H$ is translational invariant, i.e. $[\hat H, \hat T]=0$;
-- The system is gapped (or, at least the gap is $\epsilon > 0$);
-- The groundstate is non-degenerate (no SSB).
-
-From these, some inputs:
-
-- The local dimension of the system $d$ (of both ℋ and ℋ′);
-- The number of sites L of the small PBC system ℋ′;
-- The basis of the groundstate sector of ℋ′;
-- The basis of the particle sector of ℋ′;
-- The local Hamiltonian Hⱼ in matrix form (p-local operator like);
-- The translation operator T for the two sectors;
-- The translation operator $T$
-
-We put the following limits:
-
-- For $\dim \mathcal H < 20000$ we use exact diagonalization;
-- For higher values of $\dim \mathcal H$  we use the Arnoldi method;
-- For $d > 10$ we should use purely TN methods.
+- **1D** **space** dimension: the space dimension of the system is $D=1$. Next step go higher dimensions $D>1$;
+- **Discretization** of the space: The system is discrete, on lattice, with constant lattice spacing $a=1$. For some systems like Lattice Gauge Theories, the goal is to get near the continuum limit $a \to 0$.
+- **Uniformity** of local dimension: The system has a uniform local dimension $d$. This also means that for PBC it is always defined a translation operator $\hat T$ of a unit site (on the right); Next step: generalize to the **Periodicity** $n$ of the local dimension (so that the translation operator is still defined). An example could be staggered fermions.
+- **Translational invariance**: $H$ is translational invariant, i.e. $[H, T]=0$; Next steps involve generalizing this translational invariance to $T^n$ or a more generic translation.
+- **Locality** of the interaction: the Hamiltonian $H$ can be written as a sum of local Hamiltonians $H = \sum_{j}H_j$, where $H_j = T^j H_0 T^{j\dag}$. $H_0$ is called local Hamiltonian and by definition has a limited support which does not scale with the system size $L$.
+- **Gapped** Hamiltonian: or, at least, the gap $\Delta > 0$  is not near the machine precision; The limitation to tackle $\Delta = 0$ is also due to Tensor Network area-law theorems. However, nothing forbids to try to simulate systems with $\Delta = 0$ in an approximate way.
+- **Non-degeneration** of the groundstate (no SSB). Next step: include SSB phases (kink scattering).
 
 ## Installation
 

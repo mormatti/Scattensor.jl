@@ -1,102 +1,13 @@
+
+using Scattensor
 using ITensors, ITensorMPS
 using LinearAlgebra
+using SparseArrays
+using Optim
 using Plots
 using PlotlyJS
-using SparseArrays
 using KrylovKit
 using Logging
-plotly()
-
-""" Generates the translation operator for a chain of `L` sites with local dimension `d`.
-    
-    ## Assumptions
-     - The system is assumed to be uniform, i.e. the local dimension is the same for all sites.
-     - The system, in order to perform a translation, must be in periodic boundary conditions.
-
-    ## Inputs
-    - `L` is the number of sites of the chain.
-    - `d` is the local dimension.
-
-    ## Outputs
-    - The translation operator `T` in matrix form.
-    """
-function generate_translation_operator_matrix(d::Integer, L::Integer)::SparseMatrixCSC{Int64, Int64}  
-    N = d^L
-    T = spzeros(Float64, N, N)
-
-    Lst = []
-    c = 0
-    for _ in 1:d
-        lst = []
-        for _ in 1:(N/d)
-            c = c + 1
-            push!(lst, c)
-        end
-        push!(Lst, lst)
-    end
-
-    for indL in eachindex(Lst)
-        lst = Lst[indL]
-        for ind in eachindex(lst)
-            j = lst[ind]
-            T[j, ((d*(j-1)+1)%N) + indL - 1] = 1
-        end
-    end
-
-    return T
-end
-
-# Alcuni modelli sotto forma di OpSum
-
-function H0_spinchain(; Jx = 0, Jy = 0, Jz = 0, hx = 0, hy = 0, hz = 0)
-    os = OpSum()
-    os += -hx, "Sx", 1
-    os += -hx, "Sx", 2
-    os += -hy, "Sy", 1
-    os += -hy, "Sy", 2
-    os += -hz, "Sy", 1
-    os += -hz, "Sy", 2
-    os += -4*Jx, "Sx", 1, "Sx", 2
-    os += -4*Jy, "Sy", 1, "Sy", 2
-    os += -4*Jz, "Sz", 1, "Sz", 2
-
-    H0 = MPO(os, siteinds("S=1/2", 2))
-
-    # We extract the site indices of the MPO
-    sind = siteinds(H0)
-
-    # We extract the indeces up and indeces down
-    sind_trans = [collect(t) for t in zip(sind...)]
-    sitesup = sind_trans[1]
-    sitesdown = sind_trans[2]
-    L0 = 2
-
-    # We fuse the indices of the MPO to get a matrix
-    # We transform the MPO into a matrix,
-    # sequentially contract each MPO tensor into IT
-    combinerup = combiner(sitesup)
-    combinerdown = combiner(sitesdown)
-    H0it = H0[1]
-    for j in 2:L0
-        H0it *= H0[j]
-    end
-
-    return SparseMatrixCSC(matrix(combinerup * H0it * combinerdown))
-end
-
-function H0_bosehubbard(; t = 0, U = 0, μ = 0, V = 0)
-    os = OpSum()
-    os += -t, "A", 1, "Adag", 2
-    os += -t, "Adag", 1, "A", 2
-    os += +U/4, "N", 1, "N", 1
-    os += -U/4, "N", 1
-    os += +U/4, "N", 2, "N", 2
-    os += -U/4, "N", 2
-    os += -μ/2, "N", 1, "N", 1
-    os += -μ/2, "N", 2, "N", 2
-    os += -V, "N", 1, "N", 2
-    return MPO(os, siteinds("Boson", 2))
-end
 
 function H0_glueballs(; gE = 0, gB = 0)
     
@@ -339,3 +250,16 @@ function H0_glueballs(; gE = 0, gB = 0)
 
     return gE * E2 - gB * (Uplaq + Uplaq')
 end
+
+# We define the local Hamiltonian
+λ = 0.0
+H0matrix = H0_glueballs(gE = λ, gB = 1 - λ)
+
+H0 = LocalOperator(H0matrix, [3, 3, 3], "h")
+
+# We calculate the dispersion relation
+dr = _disprel(H0, 7)
+
+println("Type of dispersion relation: ", typeof(dr))
+
+myplot(dr)
