@@ -3,11 +3,13 @@
 mutable struct BlochState{T}
     repr::T # The state of the Bloch state
     energy::Real # The energy of the Bloch state
-    momentum::Rational # The momentum of the Bloch state (in Rational representation)
+    kfraction::Rational # The momentum of the Bloch state (in Rational representation)
 end
 
 # PROPERTIES
 
+wavefunction(bs::BlochState) = bs.repr
+
 energy(bs::BlochState) = bs.energy
 
-momentum(bs::BlochState) = bs.momentum
+momentum(bs::BlochState) = bs.kfraction * π

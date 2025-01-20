@@ -1,13 +1,10 @@
 
-using Scattensor
-using ITensors, ITensorMPS
 using LinearAlgebra
 using SparseArrays
-using Optim
 using Plots
-using PlotlyJS
-using KrylovKit
-using Logging
+
+using Scattensor
+using Revise
 
 function H0_glueballs(; gE = 0, gB = 0)
     
@@ -257,9 +254,6 @@ H0matrix = H0_glueballs(gE = λ, gB = 1 - λ)
 
 H0 = LocalOperator(H0matrix, [3, 3, 3], "h")
 
-# We calculate the dispersion relation
-dr = _disprel(H0, 7)
+println("Operator H0 created")
 
-println("Type of dispersion relation: ", typeof(dr))
-
-myplot(dr)
+# drel = disprel(H0, 7)

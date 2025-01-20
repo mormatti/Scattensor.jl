@@ -10,13 +10,26 @@ using PlotlyJS
 using KrylovKit
 using Logging
 
-export disprel, selectstates, wannier
-
 include("utils.jl")
 include("localop.jl")
 include("blochstate.jl")
 include("qsystem.jl")
 include("disprel.jl")
 include("wannier.jl")
+
+# Exporting objects
+export LocalOperator
+export BlochState
+
+# Exporting functions
+export translate
+export reflect
+export entanglement_entropy
+export disprel
+export groundstate
+export energy
+export momentum
+export selectband
+export wannier
 
 end # module Scattensor

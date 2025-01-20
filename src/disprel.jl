@@ -2,9 +2,19 @@
 
 # A generic vector of bloch states can be a whole dispersion relation, a band, etc.
 
+# PLOTTING
+
+function Plots.plot(disprelvec::Vector{T}) where {T <: BlochState}
+    E = [energy(state) for state in disprelvec]
+    k = [momentum(state) for state in disprelvec]
+    return Plots.plot(k, E, seriestype = :scatter, label = "Dispersion relation")
+end
+
+# COMPUTING DISPERSION RELATION
+
 # Dense case => method is exact
 # Sparse case => method is Krylov
-function _disprel(H0::LocalOperator{allowedtype}, L::Int; nlevels::Int = 2, kwargs...) where {allowedtype <: Union{Hermitian, SparseMatrixCSC}}
+function disprel(H0::LocalOperator{allowedtype}, L::Int; nlevels::Int = 2, kwargs...) where {allowedtype <: Union{Hermitian, SparseMatrixCSC}}
 
     # We identify the type and we define define the identity matrix generation function
     hermitiantype = allowedtype <: Hermitian
@@ -113,14 +123,16 @@ function _disprel(H0::LocalOperator{allowedtype}, L::Int; nlevels::Int = 2, kwar
 end
 
 # MPO case => method is Tensor Networks
-function _disprel(H0::LocalOperator{MPO};
+function disprel(H0::LocalOperator{MPO};
                     nlevels::Int = 3,
                     kwargs...)
     
     error("Method disprel with Pure Tensor Newtork approach not implemented yet :(")
 end
 
-function groundstate(states::Vector{BlochState{T}}) where {T}
+# STATES SELECTION
+
+function groundstate(states::Vector{T}) where {T <: BlochState}
     # We identify the position of the state which have the lowest energy
     i0 = 1
     for i in eachindex(states)
@@ -131,24 +143,21 @@ function groundstate(states::Vector{BlochState{T}}) where {T}
     return states[i0]
 end
 
-function selectband(states::Vector{BlochState{T}}; abovenergy::R = 0) where {T, R <: Real}
+function selectband(states::Vector{T}; abovenergy::R = 0) where {T <: BlochState, R <: Real}
     # We remove all the states which are below the energy abovenergy
     states = filter(state -> energy(state) >= abovenergy, states)
 
-    band = []
-
-    while !isempty(states)
-        ground = groundstate(states)
-        k = momentum(ground)
-        # We remove all the states which have momentum k
-        states = filter(state -> momentum(state) != k, states)
-        push!(band, ground)
+    if isempty(states)
+        return Vector{BlochState}()
+    else
+        band = [groundstate(states)]
+        while !isempty(states)
+            ground = groundstate(states)
+            k = momentum(ground)
+            # We remove all the states which have momentum k
+            states = filter(state -> momentum(state) != k, states)
+            push!(band, ground)
+        end
+        return band
     end
-    return band
-end
-
-function myplot(disprelvec::T) where {T <: Vector{BlochState}}
-    E = [state.energy for state in disprelvec]
-    k = [state.momentum * π for state in disprelvec]
-    return Plots.plot(k, E, seriestype = :scatter, label = "Dispersion relation")
 end
