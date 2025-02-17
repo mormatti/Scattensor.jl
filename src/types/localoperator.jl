@@ -8,7 +8,7 @@
     - `sitedims` is a tuple of integers representing the sites where the local operator acts.
        For instance, the local Hamiltonian of the Ising model has sites (2,2).
     """
-mutable struct LocalOperator{T}
+mutable struct LocalOperator{T} <: QuantumOperator{T}
     repr::T # The representation of the local operator
     localdims:: Vector{Int64} # The local dimensions of the sites
     name::String # The symbol representing the name of the local operator
@@ -16,17 +16,21 @@ end
 
 # PROPERTIES
 
-function Base.length(lo::LocalOperator)
+function Base.length(lo::T) where {T <: LocalOperator}
     return length(lo.localdims)
 end
 
-function hasuniformlocaldims(lo::LocalOperator)
+function hasuniformlocaldims(lo::T) where {T <: LocalOperator}
     return all(x -> x == lo.localdims[1], lo.localdims)
+end
+
+function representation(lo::T) where {T <: LocalOperator}
+    return lo.repr
 end
 
 # CONSTRUCTORS
 
-function LocalOperator(matrix::T, localdims::Vector{Int64}, name::String) where {T <: AbstractMatrix}
+function LocalOperator(matrix::T, localdims::Vector{U}, name::String) where {T <: AbstractMatrix, U <: Unsigned}
     # We first assert that the matrix is squared and we get the dimension
     N, N2 = size(matrix)
     @assert N == N2 "The matrix must be squared."

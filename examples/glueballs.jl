@@ -11,10 +11,11 @@ function H0_glueballs(; gE = 0, gB = 0)
     # link states: 0 trivial, 1 fundamental, 2 antifundamental
     # Positive direction: exiting from junction
     # 0 trivial, 1 fundamental, 2 antifundamental
-    # A 3-junction is a tuple.
+    # A 3-junction is a tuple (a,b,c).
     # The constructor of a three-junction
     # can represent a top T junction or a bottom T junction
-    function junction(l1::Int, l2::Int, l3::Int)
+
+    function junction(l1::IntType, l2::IntType, l3::IntType) where {IntType <: Int}
         return (mod(l1, 3), mod(l2, 3), mod(l3, 3))
     end
 
@@ -22,30 +23,21 @@ function H0_glueballs(; gE = 0, gB = 0)
         return (mod(j[1] + j[2] + j[3], 3) == 0)
     end
 
-    # va = 1.0 / sqrt(3)
-    # vb = 1.0 / sqrt(sqrt(27))
-    # vc = 1.0 / 3.0
+    va = 1.0
+    vb = 1.0 / sqrt(3)
+    vc = 1.0 / sqrt(sqrt(3))
 
     # Coefficients of UR in the T junction (of basis by Pietro)
-    # C1 = va
-    # C2 = va
-    # C3 = va
-    # C4 = -vb
-    # C5 = vc
-    # C6 = -vb
-    # C7 = vb
-    # C8 = vc
-    # C9 = vb
-
-    C1 = 1
-    C2 = 1
-    C3 = 1
-    C4 = 1
-    C5 = 1/3
-    C6 = 1
-    C7 = 1
-    C8 = 1/3
-    C9 = 1
+    # Pietro's coefficients: 1, 1, 1, 1/3, 1, 1, 1/3, 1
+    C1 = va
+    C2 = va
+    C3 = va
+    C4 = -vb
+    C5 = vc
+    C6 = -vb
+    C7 = vb
+    C8 = vc
+    C9 = vb
 
     # U right for gauge invariant top-T-junction (Left, Right, Bottom links)
     function URT(j::Tuple)
@@ -254,6 +246,8 @@ H0matrix = H0_glueballs(gE = λ, gB = 1 - λ)
 
 H0 = LocalOperator(H0matrix, [3, 3, 3], "h")
 
-println("Operator H0 created")
+display(H0)
 
-# drel = disprel(H0, 7)
+drel = disprel(H0, 9)
+
+Plots.plot(drel)
