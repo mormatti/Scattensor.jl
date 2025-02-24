@@ -89,3 +89,5 @@ bd = selectfirstband(drel)
 energ, details = wannier(bd, H0, E0)
 
 Plots.plot(energ)
+
+print("Prova")
