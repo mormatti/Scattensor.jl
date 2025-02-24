@@ -156,6 +156,7 @@ for ix in 1:N
         end
     end
 end
+
 HB = Uplaq + Uplaq'
 
 function format_matrix_for_mathematica(matrix::AbstractMatrix)
@@ -163,18 +164,287 @@ function format_matrix_for_mathematica(matrix::AbstractMatrix)
     return "{" * join(formatted_rows, ", ") * "}"
 end
 
-λ = 0.8
-gE = λ
-gB = 1 - λ
-
-# We define the local Hamiltonian
-H0 = LocalOperator(gE * E2 + gB * (Uplaq + Uplaq'), [3, 3, 3], "h")
-
-drel = disprel(H0, 9, nlevels = 15)
-
-# We take only the k = 0
-for el in drel
-    if el.kfraction == 0
-        println(energy(el))
-    end
+function matrix_to_mpo(A::Matrix, d::Int, N::Int; cutoff=1e-8)
+    @assert size(A, 1) == d^N && size(A, 2) == d^N "Matrix dimensions must be d^N x d^N"
+    sites = [Index(d, "Site, n=$i") for i in 1:N]  # For local dimension d=2, use "Qubit"; for d=3, use appropriate site type
+    T = reshape(A, (repeat([d], 2N)...))
+    IT = ITensor(T, (sites..., prime.(sites)...))
+    W = MPO(IT, sites; cutoff=cutoff)
+    return W, sites
 end
+
+function vector_to_mps(v::Vector, d::Int, N::Int; cutoff=1e-8, maxdim=10)
+    @assert length(v) == d^N "Vector length must be d^N"
+    sites = [Index(d, "Site, n=$i") for i in 1:N]
+    T = reshape(v, (repeat([d], N)...))
+    IT = ITensor(T, sites...)
+    psi = MPS(IT, sites; cutoff=cutoff, maxdim=maxdim)
+    return psi, sites
+end
+
+"""
+Constructs the reflection operator matrix for a 1D system with L sites and local dimension d.
+"""
+function reflection_operator(L::Int, d::Int)
+    # Generate all possible basis states as integer arrays
+    basis_states = collect(Iterators.product(ntuple(_ -> 0:d-1, L)...))
+    dim_H = d^L  # Total Hilbert space dimension
+    R = spzeros(Int, dim_H, dim_H)  # Initialize reflection matrix
+    
+    # Map basis states to their reflected counterparts
+    state_to_index = Dict(state => i for (i, state) in enumerate(basis_states))
+    
+    for (i, state) in enumerate(basis_states)
+        reflected_state = reverse(state)  # Reflect the state
+        j = state_to_index[reflected_state]  # Get index of the reflected state
+        R[j, i] = 1  # Set matrix element
+    end
+    
+    return R
+end
+
+"""
+Constructs the reflection operator matrix for a 1D system with L sites and local dimension d.
+"""
+function translation_operator(L::Int, d::Int)
+    # Generate all possible basis states as integer arrays
+    basis_states = collect(Iterators.product(ntuple(_ -> 0:d-1, L)...))
+    dim_H = d^L  # Total Hilbert space dimension
+    T = spzeros(Int, dim_H, dim_H)  # Initialize reflection matrix
+    
+    # Map basis states to their reflected counterparts
+    state_to_index = Dict(state => i for (i, state) in enumerate(basis_states))
+    
+    for (i, state) in enumerate(basis_states)
+        reflected_state = Tuple(circshift([i for i in state], 1))  # Reflect the state
+        j = state_to_index[reflected_state]  # Get index of the reflected state
+        T[j, i] = 1  # Set matrix element
+    end
+    
+    return T
+end
+
+function glueball_spectrum_lanczos(L, λ)
+    gE = λ
+    gB = 1 - λ
+    eps = (1 - λ)/λ
+
+    # We define the local Hamiltonian
+    H0 = LocalOperator(gE * E2 - gB * (Uplaq + Uplaq'), [3, 3, 3], "h")
+    drel = disprel(H0, L, nlevels = 30)
+
+    println("Grounstate energy = ", energy(getgroundstate(drel)))
+
+    Plots.plot(drel)
+
+    # Groundstate energy
+    # We take only the k = 0
+    # for el in drel
+    #     if el.kfraction == 0
+    #         println((energy(el) - 16/3 - eps)/(0.01)^2, ", ", (energy(el) - 16/3 + eps)/(0.01)^2)
+    #     end
+    # end
+
+    return drel
+end
+
+
+# Define a system with qutrits
+ITensors.space(::SiteType"glueball") = 3
+bv1 = [1 0 0]
+bv2 = [0 1 0]
+bv3 = [0 0 1]
+operatorc = [0  1  0
+             0  0  1
+             1  0  0]
+operatorn0 =[1  0  0
+             0  0  0
+             0  0  0]
+operatorn1 =[0  0  0
+             0  1  0
+             0  0  0]
+operatorn2 =[0  0  0
+             0  0  0
+             0  0  1]
+ITensors.op(::OpName"cdag", ::SiteType"glueball") = operatorc
+ITensors.op(::OpName"c", ::SiteType"glueball") = operatorc'
+ITensors.op(::OpName"c+", ::SiteType"glueball") = (operatorc + operatorc') / 2
+ITensors.op(::OpName"c-", ::SiteType"glueball") = (operatorc - operatorc') / 2
+ITensors.op(::OpName"n0", ::SiteType"glueball") = operatorn0
+ITensors.op(::OpName"n1", ::SiteType"glueball") = operatorn1
+ITensors.op(::OpName"n2", ::SiteType"glueball") = operatorn2
+ITensors.op(::OpName"n+", ::SiteType"glueball") = (operatorn1 + operatorn2) / 2
+ITensors.op(::OpName"n-", ::SiteType"glueball") = (operatorn1 - operatorn2) / 2
+ITensors.op(::OpName"bas11", ::SiteType"glueball") = bv1'*bv1
+ITensors.op(::OpName"bas12", ::SiteType"glueball") = bv1'*bv2
+ITensors.op(::OpName"bas13", ::SiteType"glueball") = bv1'*bv3
+ITensors.op(::OpName"bas21", ::SiteType"glueball") = bv2'*bv1
+ITensors.op(::OpName"bas22", ::SiteType"glueball") = bv2'*bv2
+ITensors.op(::OpName"bas23", ::SiteType"glueball") = bv2'*bv3
+ITensors.op(::OpName"bas31", ::SiteType"glueball") = bv3'*bv1
+ITensors.op(::OpName"bas32", ::SiteType"glueball") = bv3'*bv2
+ITensors.op(::OpName"bas33", ::SiteType"glueball") = bv3'*bv3
+
+function ↻(n::Integer, m::Integer)::Integer
+    n > 0 ? (n-1)%m + 1 : m + n%m
+end
+
+# GLOBAL VARIABLES
+Lglobal = 20
+λglobal = 0.3
+sitesglobal = siteinds("glueball", Lglobal)
+
+function hamiltonian_mpo(; sites = sitesglobal, λ = λglobal)
+    L = length(sites)
+    ampo = AutoMPO()
+    H0r = reshape(λ * E2 - (1 - λ) * (Uplaq + Uplaq'), (3,3,3,3,3,3))
+    for j in 1:L
+        ranges = [1:3 for _ in 1:6]
+        for tuple in Iterators.product(ranges...)
+            H0rvalue = H0r[tuple[1], tuple[2], tuple[3], tuple[4], tuple[5], tuple[6]]
+            if H0rvalue != 0
+                oprj = "bas$(tuple[1])$(tuple[4])"
+                oprjp1 = "bas$(tuple[2])$(tuple[5])"
+                oprjp2 = "bas$(tuple[3])$(tuple[6])"
+                add!(ampo, H0rvalue, oprj, j↻L , oprjp1, (j+1)↻L, oprjp2, (j+2)↻L)
+            end
+        end
+    end
+    return MPO(ampo, sites)
+end
+
+function local_hamiltonian_mpo(j; sites = sitesglobal, λ = λglobal)
+    L = length(sites)
+    ampo = AutoMPO()
+    H0r = reshape(λ * E2 - (1 - λ) * (Uplaq + Uplaq'), (3,3,3,3,3,3))
+    ranges = [1:3 for _ in 1:6]  # Create a list of ranges
+    for tuple in Iterators.product(ranges...)
+        H0rvalue = H0r[tuple[1], tuple[2], tuple[3], tuple[4], tuple[5], tuple[6]]
+        if H0rvalue != 0
+            oprj = "bas$(tuple[1])$(tuple[4])"
+            oprjp1 = "bas$(tuple[2])$(tuple[5])"
+            oprjp2 = "bas$(tuple[3])$(tuple[6])"
+            add!(ampo, H0rvalue, oprj, j↻L , oprjp1, (j+1)↻L, oprjp2, (j+2)↻L)
+        end
+    end
+    return MPO(ampo, sites)
+end
+
+Hmpo = hamiltonian_mpo()
+Hlocmpo = [local_hamiltonian_mpo(j) for j in 1:Lglobal]
+
+Eng0, ψ0 = dmrg(Hmpo,
+                randomMPS(sitesglobal; linkdims=100);
+                nsweeps=10, 
+                maxdim=[100, 200], 
+                cutoff=1e-12)
+
+println("Ground state energy = $Eng0")
+
+function apply_localop_to_mps(localopname, mps, j)
+    newmps = deepcopy(mps)
+    s = siteind(newmps, j)
+    Opt = op(localopname, s)
+    new_tensor = Opt * newmps[j]
+    noprime!(new_tensor)
+    newmps[j] = new_tensor
+    return newmps
+end
+
+function wavepacketcreator(jbar, kbar, sigma; sites = sitesglobal)
+    L = length(sites)
+    autmpo = AutoMPO()
+    for j in 1:L  # Ensure we stay within bounds
+        coeff = exp(im * kbar * j) * exp(-(j - jbar)^2 / (2 * sigma))
+        if abs(coeff) > 10^(-15)
+            add!(autmpo, coeff, "c+", j↻L)  # Example spin interaction
+        end
+    end
+    return MPO(autmpo, sites)
+end
+
+function energyprofile(ψmps, ψzero; L = Lglobal)
+    return [real(inner(ψmps', Hlocmpo[j], ψmps) - inner(ψzero', Hlocmpo[j], ψzero)) for j in 1:(L-2)]
+end
+
+function particleprofile(ψmps; L = Lglobal)
+    ret = []
+    for j in 2:(L-1)
+        ψpart = apply_localop_to_mps("n+", ψmps, j)
+        push!(ret, abs(inner(ψmps', ψpart)))
+    end
+    return ret
+end
+
+ψ1 = apply_localop_to_mps("c+", ψ0, 10)
+ψ1 = normalize(ψ1)
+# print("1-particle energy = ", inner(ψ1', H, ψ1))
+
+# ψ1 = normalize(apply(wavepacketcreator(10, π/2, 1.5), ψ0))
+# Plots.plot(energyprofile(ψ1, ψ0))
+
+function tdvp_time_evolution(H::MPO, ψ::MPS, ψ₀::MPS, dt::Float64, Δt::Float64; L = Lglobal)
+
+    N = Integer(round(Δt / dt)) # Number of steps
+    # We create the list of times 
+    times = [n * dt for n in 1:N]
+    positions = [x for x in 2:L-1]
+
+    # We create a 2D array E of dimensions (N, L-2)
+    En = zeros(N, L-2)
+    Pp = zeros(N, L-2)
+    EnLog = zeros(N, L-2)
+    Linkdims = zeros(N, L-2)
+    Maxlinkdim = zeros(N)
+
+    for n in 1:N
+        println("Step ", n, " of ", N)
+
+        timeElapsed = @elapsed begin
+            ψ = tdvp(H, -im * dt, ψ, maxdim = 10)
+            normalize!(ψ)
+            # print("maxdim1 = ", maxlinkdim(ψ))
+            # orthogonalize!(ψ, 1, maxdim = 20)
+            # orthogonalize!(ψ, L, maxdim = 20)
+            print("maxdim = ", maxlinkdim(ψ))
+            Eprofile = energyprofile(ψ, ψ₀)
+            Pprofile = particleprofile(ψ)
+            for j in 2:(L-1)
+                En[n,j-1] = Eprofile[j-1]
+                Pp[n,j-1] = Pprofile[j-1]
+                EnLog[n,j-1] = log10(abs(Eprofile[j-1]))
+                Linkdims[n,j-1] = linkdim(ψ,j)
+                Maxlinkdim[n] = maxlinkdim(ψ)
+            end
+        end
+
+        # Print information
+        println("Step ", n, " of ", N, " completed.")
+        println("Maximum link dimension of MPS: ", maxlinkdim(ψ))
+        println("Relative Energy: ", real(inner(ψ', H, ψ) - inner(ψ₀', H, ψ₀)))
+        println("Estimated time remained: ", timeElapsed * (N - n), " seconds.")
+    end
+
+    # heatmap(positions, times, En)
+    # savefig("simulation_output/En.png")
+    # heatmap(positions, times, EnLog)
+    # savefig("simulation_output/EnLog.png")
+    # heatmap(positions, times, Linkdims)
+    # savefig("simulation_output/Linkdims.png")
+    # titleString = "L = $L, λ = $λ, jⁱᵐᵖ = $jⁱᵐᵖ, jᵂᴾ = $jᵂᴾ, kᵂᴾ = $kᵂᴾ,
+                    # σᵂᴾ = $σᵂᴾ, ϵᵂᴾ = $ϵᵂᴾ, Nᴰᴹᴿᴳ = $Nᴰᴹᴿᴳ, χᴰᴹᴿᴳ ≤ $χᴰᴹᴿᴳ,
+                    # ϵᴰᴹᴿᴳ = $ϵᴰᴹᴿᴳ, χᵀᴰⱽᴾ ≤ $χᵀᴰⱽᴾ, ϵᵀᴰⱽᴾ = $ϵᵀᴰⱽᴾ, dt = $dt, Δt = $Δt"
+    # titleString = "Graph"
+    # l = @layout [grid(2,2); b{0.2h}]
+    # title = Plots.plot(title = titleString, grid = false, showaxis = false)
+    # Plots.plot(p1, p2, p3, p4, title, layout = l, dpi = 300, size=(1000, 1000))
+
+    return Dict(
+        "E" => Plots.heatmap(positions, times, En),
+        "Pprofile" => Plots.heatmap(positions, times, Pp),
+        "LogE" => Plots.heatmap(positions, times, EnLog), 
+        "Linkdims" => Plots.heatmap(positions, times), 
+        "Maxlinkdims" => Plots.plot(times, Maxlinkdim))
+end
+
+myplots = tdvp_time_evolution(Hmpo, ψ1, ψ0, 0.1, 10.0)
