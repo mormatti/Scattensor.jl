@@ -70,7 +70,7 @@ function corner(jc::Junc)
     else
         coeff = 1.0 / sqrt(sqrt(3))
     end
-    if jc == Junc(Irp(0), Irp(2), Irp(1)) || jc == Junc(Irp(1), Irp(1), Irp(1))
+    if jc == Junc(Irp(0), Irp(2), Irp(1)) || jc == Junc(Irp(1), Irp(1), Irp(1)) || jc == Junc(Irp(2), Irp(2), Irp(2))
         coeff *= 1
     end
     return Junc(jc.leg1, jc.leg2 * Irp(2), jc.leg3 * Irp(1)), coeff
@@ -330,16 +330,16 @@ function local_hamiltonian_mpo(j; sites = sitesglobal, λ = λglobal)
     return MPO(ampo, sites)
 end
 
-Hmpo = hamiltonian_mpo()
-Hlocmpo = [local_hamiltonian_mpo(j) for j in 1:Lglobal]
+# Hmpo = hamiltonian_mpo()
+# Hlocmpo = [local_hamiltonian_mpo(j) for j in 1:Lglobal]
 
-Eng0, ψ0 = dmrg(Hmpo,
-                randomMPS(sitesglobal; linkdims=100);
-                nsweeps=10, 
-                maxdim=[100, 200], 
-                cutoff=1e-12)
+# Eng0, ψ0 = dmrg(Hmpo,
+#                 randomMPS(sitesglobal; linkdims=100);
+#                 nsweeps=10, 
+#                 maxdim=[100, 200], 
+#                 cutoff=1e-12)
 
-println("Ground state energy = $Eng0")
+# println("Ground state energy = $Eng0")
 
 function apply_localop_to_mps(localopname, mps, j)
     newmps = deepcopy(mps)
@@ -376,8 +376,8 @@ function particleprofile(ψmps; L = Lglobal)
     return ret
 end
 
-ψ1 = apply_localop_to_mps("c+", ψ0, 10)
-ψ1 = normalize(ψ1)
+# ψ1 = apply_localop_to_mps("c+", ψ0, 10)
+# ψ1 = normalize(ψ1)
 # print("1-particle energy = ", inner(ψ1', H, ψ1))
 
 # ψ1 = normalize(apply(wavepacketcreator(10, π/2, 1.5), ψ0))
@@ -447,4 +447,4 @@ function tdvp_time_evolution(H::MPO, ψ::MPS, ψ₀::MPS, dt::Float64, Δt::Floa
         "Maxlinkdims" => Plots.plot(times, Maxlinkdim))
 end
 
-myplots = tdvp_time_evolution(Hmpo, ψ1, ψ0, 0.1, 10.0)
+# myplots = tdvp_time_evolution(Hmpo, ψ1, ψ0, 0.1, 10.0)
