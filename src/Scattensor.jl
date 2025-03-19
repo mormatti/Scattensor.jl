@@ -1,47 +1,48 @@
 module Scattensor
 
-# Usings 
-using ITensors, ITensorMPS
-using LinearAlgebra
-using SparseArrays
-using Optim
-using Plots
-using PlotlyJS
-using KrylovKit
-using Logging
+    # Usings 
+    using ITensors, ITensorMPS
+    using LinearAlgebra
+    using SparseArrays
+    using Optim
+    using Plots
+    using PlotlyJS
+    using KrylovKit
+    using Colors
+    using Logging
 
-# Utils
-include("utils/misc.jl")
-include("utils/matrices.jl")
-include("utils/mps.jl")
+    # Utils
+    include("utils/notations.jl")
+    include("utils/outputs.jl")
 
-# Abstract types
-include("types/quantumoperator.jl")
-include("types/quantumstate.jl")
-include("types/quantumsystem.jl")
+    # Types
+    include("types/localoperator.jl")
+    include("types/blochstate.jl")
 
-# Concrete types
-include("types/localoperator.jl")
-include("types/blochstate.jl")
+    # Conversions
+    include("utils/conversions.jl")
 
-# Functions
-include("functions/matrixelement.jl")
-include("functions/disprel.jl")
-include("functions/wannier.jl")
+    # Operators
+    include("operators/identity.jl")
+    include("operators/translation.jl")
+    include("operators/reflection.jl")
 
-# Exporting objects
-export LocalOperator
-export BlochState
+    # Functions
+    include("functions/localops.jl")
+    include("functions/products.jl")
+    include("functions/diagonalization.jl")
+    include("functions/entropy.jl")
+    include("functions/partialtrace.jl")
+    include("functions/evolution.jl")
 
-# Exporting functions
-export translate
-export reflect
-export entanglement_entropy
-export disprel
-export getgroundstate
-export energy
-export momentum
-export selectband
-export wannier
+    # Scattering
+    include("scattering/disprel.jl")
+    include("scattering/wannier.jl")
+
+    # Models
+    include("models/spinchain.jl")
+    include("models/bosehubbard.jl")
+    include("models/clockmodel.jl")
+    include("models/glueballs.jl")
 
 end # module Scattensor

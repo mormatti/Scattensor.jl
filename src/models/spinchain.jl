@@ -59,35 +59,3 @@ function H0_spinchain(; Jx = 0, Jy = 0, Jz = 0, hx = 0, hy = 0, hz = 0, L0 = 2)
 
     return SparseMatrixCSC(matrix(combinerup * H0it * combinerdown))
 end
-
-function H0_bosehubbard(; t = 0, U = 0, μ = 0, V = 0)
-    os = OpSum()
-    os += -t, "A", 1, "Adag", 2
-    os += -t, "Adag", 1, "A", 2
-    os += +U/4, "N", 1, "N", 1
-    os += -U/4, "N", 1
-    os += +U/4, "N", 2, "N", 2
-    os += -U/4, "N", 2
-    os += -μ/2, "N", 1, "N", 1
-    os += -μ/2, "N", 2, "N", 2
-    os += -V, "N", 1, "N", 2
-    return MPO(os, siteinds("Boson", 2))
-end
-
-H0 = LocalOperator(H0_spinchain(Jz = 0.5, hx = 1, L0 = 3), [2, 2, 2], "h")
-
-drel = disprel(H0, 11)
-
-Plots.plot(drel)
-
-gs = popgroundstate!(drel)
-
-E0 = energy(gs)
-
-bd = selectfirstband(drel)
-
-energ, details = wannier(bd, H0, E0)
-
-Plots.plot(energ)
-
-print("Prova")
