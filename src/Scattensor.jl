@@ -42,7 +42,5 @@ module Scattensor
     # Models
     include("models/spinchain.jl")
     include("models/bosehubbard.jl")
-    include("models/clockmodel.jl")
-    include("models/glueballs.jl")
 
 end # module Scattensor

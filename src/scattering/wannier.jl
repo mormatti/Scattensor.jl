@@ -28,6 +28,7 @@ function local_exp_value(A0::A0Type, v::Vector{ventriesType}, L0::L0Type, d::dTy
     end
     return vals
 end
+
 export local_exp_value
 
 function wannier_symmetric(
@@ -137,3 +138,5 @@ function wannier_symmetric(
 
     return wopt
 end
+
+export wannier_symmetric

@@ -32,7 +32,7 @@ function tdvp_time_evolution(H::MPO, ψ::MPS, dt::dtType, Δt::ΔtType; kwargs..
         end
         simulationtime += timeElapsed
         print("Estimated time remained: ", timeElapsed * (N - n), " seconds. ")
-        print("\r")
+        print("\r\u001b[2K")
     end
 
     info[:simulationtime] = simulationtime
