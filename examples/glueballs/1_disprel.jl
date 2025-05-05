@@ -13,7 +13,7 @@ plotlyjs()
 # Constants
 d = 3
 L0 = 3
-L = 9
+Li = 9
 λ = 0.5
 
 # Local operators
@@ -23,12 +23,12 @@ Up = Glueballs.plaquette_operator()
 H0 = λ * E2 - (1 - λ) * (Up + Up')
 
 # Operators
-C = kron_power(SparseMatrixCSC(c), L)
-T = operator_translation(SparseMatrixCSC, d, L)
-P = operator_reflection(SparseMatrixCSC, d, L)
-H = summation_local(H0, L0, d, L; pbc = true)
-R = P * C
+Ci = kron_power(SparseMatrixCSC(c), Li)
+Ti = operator_translation(SparseMatrixCSC, d, Li)
+Pi = operator_reflection(SparseMatrixCSC, d, Li)
+Hi = summation_local(H0, L0, d, Li; pbc = true)
+Ri = Pi * Ci
 
 # Dispersion relation
-drel = disprel(H, T, L, nlevels = 10)
-plot_disprel(drel)
+drel = disprel(Hi, Ti, Li, nlevels = 10)
+p = plot_disprel(drel, color = hex_to_rgb("#CD6C2E"))

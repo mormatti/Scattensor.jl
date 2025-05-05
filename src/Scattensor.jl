@@ -10,6 +10,7 @@ module Scattensor
     using KrylovKit
     using Colors
     using Logging
+    using LaTeXStrings
 
     # Utils
     include("utils/notations.jl")
@@ -38,9 +39,6 @@ module Scattensor
     # Scattering
     include("scattering/disprel.jl")
     include("scattering/wannier.jl")
-
-    # Models
-    include("models/spinchain.jl")
-    include("models/bosehubbard.jl")
+    include("functions/smatrix.jl")
 
 end # module Scattensor

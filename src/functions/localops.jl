@@ -118,10 +118,17 @@ end
 function local_expvals(ψ::Vector{MPS}, A₀::MPO, d::dType) where {dType <: Integer}
     # We assert that all the MPS inside ψ has the same length
     @assert all(mps -> length(mps) == length(first(ψ)), ψ) "All the MPS must have the same length"
-    
+    println("")
+
+    timelapsed = 0
     matrix = zeros(length(ψ), length(ψ[1]) - length(A₀))
-    for α in eachindex(ψ)
-        matrix[α,:] = local_expvals(ψ[α], A₀, d)
+    N = length(ψ)
+    for n in 1:N
+        print("Step $n / $N. Estimated remaining time: $(timelapsed * (N - n)).")
+        timelapsed = @elapsed begin
+        matrix[n,:] = local_expvals(ψ[n], A₀, d)
+        end
+        print("\r\u001b[2K")
     end
     return matrix
 end

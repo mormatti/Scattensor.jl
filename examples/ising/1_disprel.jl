@@ -8,20 +8,26 @@ using ITensorMPS, ITensors
 # Constants
 d = 2
 L0 = 3
-L = 11
-λ = 0.2
+Li = 11
+λ = 0.5
 
 # Local operators
-σx = [0 1; 1 0]
-σz = [1 0; 0 -1]
-Id = [1 0; 0 1]
-H0 = SparseMatrixCSC(-λ * (1/2 * kron(Id, σz, σz) + 1/2 * kron(σz, σz, Id)) - (1 - λ) * (kron(Id, σx, Id)))
+id = SparseMatrixCSC([1 0; 0 1])
+σx = SparseMatrixCSC([0 1; 1 0])
+σz = SparseMatrixCSC([1 0; 0 -1])
+hunit = 4 / π^2
+ME = hunit * spdiagm(0 => [2, 2, 2, 0])
+
+⊗(A, B) = kron(A, B)
+HE = 1/2 * (ME ⊗ id' + id ⊗ ME)
+HB = id ⊗ σx ⊗ id + id ⊗ σx' ⊗ id
+H0 = SparseMatrixCSC(λ * HE - (1 - λ) * HB)
 
 # Operators
-H = summation_local(H0, L0, d, L; pbc = true)
-T = operator_translation(SparseMatrixCSC, d, L)
-R = operator_reflection(SparseMatrixCSC, d, L)
+Hi = summation_local(H0, L0, d, Li; pbc = true)
+Ti = operator_translation(SparseMatrixCSC, d, Li)
+Ri = operator_reflection(SparseMatrixCSC, d, Li)
 
-drel = disprel(H, T, L, nlevels = 10)
+drel = disprel(Hi, Ti, Li, nlevels = 10)
 
 plot_disprel(drel)

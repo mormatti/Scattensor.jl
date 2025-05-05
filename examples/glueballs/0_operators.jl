@@ -3,6 +3,7 @@ module Glueballs
     using ITensorMPS
     using LinearAlgebra
     using SparseArrays
+    using Scattensor
 
     # The structure for the Irrep
     struct Irp
@@ -232,28 +233,21 @@ module Glueballs
 
     """ The 3-local projector for the particle 0++
     """
-    function projector_0pp()
-        state = zeros(3,3,3)
-        state[1,2,1] = 1
-        state[1,3,1] = 1
-        reshaped = reshape(state, 9)
-        proj = kron(reshaped, reshaped)
-        projreshaped = reshape(proj, (3,3,3,3,3,3))
-        return projreshaped
-    end
-    export projector_0pp
+    function projectr(v::Vector{Int64})
+        # We check that all entries are between 1 and 3
+        for vel in v
+            if vel > 3 || vel < 1
+                error("Entries must be between 1 and 3")
+            end
+        end
 
-    """ The projector for the particle 0+-
-    """
-    function projector_0pm()
-        state = zeros(3,3,3)
-        state[1,2,1] = 1
-        state[1,3,1] = -1
-        reshaped = reshape(state, 9)
-        proj = kron(reshaped, reshaped)
-        projreshaped = reshape(proj, (3,3,3,3,3,3))
-        return projreshaped
+        vecof3 = [3 for _ in eachindex(v)]
+        state = zeros(vecof3...)
+        state[v...] = 1
+        reshaped = reshape(state, prod(vecof3))
+        proj = kron(reshaped', reshaped)
+        mps = convert_to(MPO, proj, 3, length(v); cutoff = 1e-12)
+        return mps
     end
-    export projector_0pm
+    export projectr
 end
-

@@ -7,7 +7,7 @@ function local_exp_value(A0::A0Type, v::Vector{ventriesType}, L0::L0Type, d::dTy
     LType <: Integer,
     addconstType <: Real,
     }
-    
+
     @assert size(A0)[1] == size(A0)[2] == d^L0 "Size of A0 incompatible."
     @assert length(v) == d^L "Size of v incompatible."
     @assert L0 <= L "L0 must be less than or equal to L."

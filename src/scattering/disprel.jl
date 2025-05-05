@@ -3,10 +3,10 @@
 
 # PLOTTING
 
-function plot_disprel(disprelvec::Vector{T}; colorby = nothing) where {T <: BlochState}
+function plot_disprel(disprelvec::Vector{T}; kwargs...) where {T <: BlochState}
     E = [energy(state) for state in disprelvec]
     k = [momentum(state) for state in disprelvec]
-    return Plots.plot(k, E, seriestype = :scatter, label = "Dispersion relation")
+    return Plots.scatter(k, E; kwargs...)
 end
 export plot_disprel
 

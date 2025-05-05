@@ -7,14 +7,14 @@ using ITensorMPS, ITensors
 using PlotlyJS
 plotly()
 
-d = 2
-L = 13
+d = 3
+L = 9
 L0 = 3
 
-t = 0.3  # 0.15
+t = 0.1  # 0.15
 U = 0   # 0
-mu = 1   # 1
-V = 1  # 0.5
+mu = 5/6   # 1
+V = (-9-4*√2)/54  # 0.5
 
 # Local operators
 id = spdiagm(0 => ones(d))
@@ -26,7 +26,7 @@ H0 = -t/2 * (b ⊗ b' ⊗ id + id ⊗ b ⊗ b')
 H0 += -t/2 * (b' ⊗ b ⊗ id + id ⊗ b' ⊗ b)
 H0 += U/2 * (id ⊗ (n * (n - id)) ⊗ id)
 H0 += -mu * (id ⊗ n ⊗ id)
-H0 += -V/2 * (id ⊗ n ⊗ n + n ⊗ n ⊗ id)
+H0 += V/2 * (id ⊗ n ⊗ n + n ⊗ n ⊗ id)
 
 # Operators
 T = operator_translation(SparseMatrixCSC, d, L)
