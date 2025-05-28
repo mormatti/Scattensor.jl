@@ -1,4 +1,4 @@
-Lbig = 32
+Lbig = 20
 χmax = 50
 
 # We consider a large system

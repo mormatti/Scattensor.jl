@@ -13,7 +13,7 @@
     - `h` is the `Vector` of real eigenstates associated to 𝐇;
     - `𝛙` is the `Vector` of (common) eigenvectors associated to 𝐇 and 𝐔.
     """
-function _simultaneous_diagonalization_HU(
+function simultaneous_diagonalization_HU(
     𝐇::Matrix{ComplexF64},
     𝐔::Matrix{ComplexF64};
     check_hermiticity::Bool = false,

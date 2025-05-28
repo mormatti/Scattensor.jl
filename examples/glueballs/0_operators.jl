@@ -65,7 +65,7 @@ module Glueballs
             coeff = 1.0 / sqrt(sqrt(3))
         end
         if jc == Junc(Irp(0), Irp(2), Irp(1)) || jc == Junc(Irp(1), Irp(1), Irp(1))
-            coeff *= 1
+            coeff *= -1
         end
         return Junc(jc.leg1, jc.leg2 * Irp(2), jc.leg3 * Irp(1)), coeff
     end

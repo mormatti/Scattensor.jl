@@ -13,8 +13,8 @@ plotlyjs()
 # Constants
 d = 3
 L0 = 3
-Li = 9
-λ = 0.5
+Li = 13
+λ = 0.0
 
 # Local operators
 c = [1 0 0; 0 0 1; 0 1 0]

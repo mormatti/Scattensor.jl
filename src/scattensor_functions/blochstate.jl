@@ -1,13 +1,9 @@
-# DEFINITION
-
 mutable struct BlochState{T}
-    repr::T # The state of the Bloch state
+    repr::T # The state of the Bloch state, in whatever representation (Vector, MPS, etc.)
     energy::Real # The energy of the Bloch state
     kfraction::Rational # The momentum of the Bloch state (in Rational representation)
-    # parityphase::Real
+    parityphase::Real
 end
-
-# PROPERTIES
 
 wavefunction(bs::BlochState) = bs.repr
 export wavefunction
@@ -18,4 +14,5 @@ export energy
 momentum(bs::BlochState) = bs.kfraction * π
 export momentum
 
-# parityphase(bs::BlochState) = bs.parityphase
+parityphase(bs::BlochState) = bs.parityphase
+export parityphase

@@ -6,22 +6,23 @@ using Scattensor
 using Revise
 gr()
 
-t = 25
-Aelm = smatrix_expansion_real_space_tdvp(d, Hmpo, psi0big, W, χmax, t)
-println("Done!")
+# N = 30
+t = 1
+S = smatrix_real_space_tdvp(d, Hmpo, psi0big, W, t, nsteps, χmax)
+println("S-matrix computed!")
 
 function dofunc()
-    # the size of one dimension of Aelm
-    sampl = 100
-    Kmatrix = zeros(ComplexF64, sampl, sampl)
-    println("Computing the K matrix...")
-    for i in 1:sampl
-        for i′ in 1:sampl
-            k = (i-1)/sampl * 2π - π
-            k′ = (i′-1)/sampl * 2π - π
-            Kmatrix[i,i′] = smatrix_element_momentum_space_tdvp(Aelm, π/2, -π/2, k, k′)
+    Lk = 100
+    matr = zeros(ComplexF64, Lk, Lk)
+    println("Computing the matrix...")
+    for i in 1:Lk
+        for i′ in 1:Lk
+            k = (i-1)/Lk * 2π - π
+            k′ = (i′-1)/Lk * 2π - π
+            matr[i,i′] = smatrix_element_momentum_space(S, k, -k, k′, -k′)
         end
     end
     # We eliminate the first 5 and last 5 rows and the first 5 and last 5 columns
-    complex_colormap_plot(Kmatrix)
+    complex_colormap_plot(-matr)
+    Plots.savefig("MatrixIsingTDVP,t=$t.png")
 end

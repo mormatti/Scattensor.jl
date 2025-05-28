@@ -1,4 +1,4 @@
-function partial_trace_left(M::MPO, j1::j1Type) where {j1Type <: Integer}
+function _partial_trace_left(M::MPO, j1::j1Type) where {j1Type <: Integer}
     @assert j1 > 0 && j1 < length(M) + 1 "j1 out of range"
     if j1 == 1
         return M
@@ -14,7 +14,7 @@ function partial_trace_left(M::MPO, j1::j1Type) where {j1Type <: Integer}
     return MPO(M′)
 end
 
-function partial_trace_right(M::MPO, j1::j1Type) where {j1Type <: Integer}
+function _partial_trace_right(M::MPO, j1::j1Type) where {j1Type <: Integer}
     @assert j1 > 0 && j1 < length(M) + 1 "j1 out of range"
     if j1 == length(M)
         return M

@@ -1,75 +1,13 @@
-# DEFINITION
-# A generic vector of bloch states can be a whole dispersion relation, a band, etc.
-
-# PLOTTING
-
-function plot_disprel(disprelvec::Vector{T}; kwargs...) where {T <: BlochState}
-    E = [energy(state) for state in disprelvec]
-    k = [momentum(state) for state in disprelvec]
-    return Plots.scatter(k, E; kwargs...)
-end
-export plot_disprel
-
-# PROPERTIES
-
-# TODO: find a way to write these function in a more efficient 
-# (complexity) and compact way
-
-function get_groundstate(states::Vector{BlochStateType}) where {BlochStateType <: BlochState}
-
-    # We identify the position of the state which have the lowest energy
-    i0 = 1
-    for i in eachindex(states)
-        if energy(states[i]) < energy(states[i0])
-            i0 = i
-        end
-    end
-    return states[i0]
-end
-export get_groundstate
-
-function pop_groundstate!(states::Vector{BlochStateType}) where {BlochStateType <: BlochState}
-    # We identify the position of the state which have the lowest energy
-    i0 = 1
-    for i in eachindex(states)
-        if energy(states[i]) < energy(states[i0])
-            i0 = i
-        end
-    end
-    return popat!(states, i0)
-end
-export pop_groundstate!
-
-function get_statesabove(states::Vector{BlochStateType}, enrg::RealType) where {BlochStateType <: BlochState, RealType <: Real}
-    return filter(state -> energy(state) >= enrg, states)
-end
-export get_statesabove
-
-function get_statesbelow(states::Vector{BlochStateType}, enrg::RealType) where {BlochStateType <: BlochState, RealType <: Real}
-    return filter(state -> energy(state) <= enrg, states)
-end
-export get_statesbelow
-
-function get_firstband(states::Vector{BlochStateType}) where {BlochStateType <: BlochState}
-    
-    if isempty(states)
-        return Vector{BlochStateType}()
-    else
-        band = [get_groundstate(states)]
-        pop!(band)
-        while !isempty(states)
-            ground = get_groundstate(states)
-            k = momentum(ground)
-            # We remove all the states which have momentum k
-            states = filter(state -> momentum(state) != k, states)
-            push!(band, ground)
-        end
-        return band
-    end
-end
-export get_firstband
-
-function disprel(H::HType, T::TType, L::LType; nlevels::nlevelsType = 2, kwargs...) where {HType <: Union{Hermitian, SparseMatrixCSC}, TType <: Union{Matrix, SparseMatrixCSC}, LType <: Integer, nlevelsType <: Integer}
+function dispersion_relation(
+    H::HType, 
+    T::TType, 
+    L::LType; 
+    nlevels::nlevelsType = 2, 
+    kwargs...) where {
+        HType <: Union{Hermitian, SparseMatrixCSC}, 
+        TType <: Union{Matrix, SparseMatrixCSC}, 
+        LType <: Integer, 
+        nlevelsType <: Integer}
 
     dimH = size(H)[1]
     if dimH != size(T)[1]
@@ -169,12 +107,12 @@ function disprel(H::HType, T::TType, L::LType; nlevels::nlevelsType = 2, kwargs.
 
     return disprelvec
 end
-export disprel
 
 # MPO case => method is Tensor Networks
-function disprel(H0::MPO;
+function dispersion_relation(H0::MPO;
                     nlevels::Int = 3,
                     kwargs...)
     error("Method disprel with Pure Tensor Newtork approach not implemented yet :(")
 end
-export disprel
+
+export dispersion_relation
