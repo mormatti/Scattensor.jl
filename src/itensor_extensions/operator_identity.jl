@@ -1,8 +1,8 @@
 """
-        operator_identity(MPO, d, L) -> MPO
+    operator_identity(MPO, d, L) -> MPO
 
-    Returns the identity operator as an MPO (Matrix Product Operator) with bond dimension 1.
-    """
+Returns the identity operator as an MPO (Matrix Product Operator) with bond dimension 1.
+"""
 function operator_identity(::Type{MPO}, d::Integer, L::Integer)
     os = OpSum()
     os += 1, "I", 1

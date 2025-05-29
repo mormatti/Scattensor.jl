@@ -1,26 +1,9 @@
-function smatrix_real_space(
-    d::dType, # The local dimension of the system
-    H::MPO, # The Hamiltonian of the system
-    ψ0::ψ0Type, # The vacuum state
-    w::wType, # The Wannier creation operator
-    t::tType, # The time at which we want to compute the S-matrix element
-    N::Int, # The number of steps
-    χmax::Int # The maximum bond dimension
-    ) where {
-        dType <: Integer,
-        ψ0Type <: MPS,
-        wType <: MPO,
-        NType <: Int,
-        tType <: Real
-        }
-
+function smatrix_real_space(d::Integer, H::MPO, ψ0::MPS, w::MPO, t::Real, N::Integer, χmax::Integer)
     # TODO assert that the local dimension of the MPS is the same as the one of the MPO
     # TODO assert that ψ0 is the groundstate of the Hamiltonian H
-
     Lψ0 = length(ψ0)
     l = length(w)
     L = Lψ0 - l + 1 # We define the length of the particle positions
-
     # We construct the single-particle basis wj
     println("Constructing the creation operators for length L...")
     W = Array{MPO}(undef, L)
@@ -28,7 +11,6 @@ function smatrix_real_space(
         W[j] = insert_local(j - 1, deepcopy(w), Lψ0 - (j - 1) - l, d)
         substitute_siteinds!(W[j], ψ0)
     end
-
     println("Constructing the asimptotic out states...")
     ψout = Array{MPS}(undef, L, L)
     for j1 in 1:L
