@@ -1,14 +1,9 @@
 """
-        print_with_color(text::String, color::RGB)
+    print_with_color(text::String, color::RGB)
 
-    A function to print colored text in the standard output.
-
-    # Arguments
-    - `text::String`: The text to be printed.
-    - `color::RGB`: The color to be used for printing the text. The color should be an instance of the `RGB` type from the `ColorTypes` package.
-    
-    # Function
-    """
+A function to print a `String` `text` as colored text in the standard output.
+The color is specified using an `RGB` type from the `ColorTypes` package.
+"""
 function print_with_color(text::String, color::RGB)
     r = round(Int, red(color) * 255)
     g = round(Int, green(color) * 255)

@@ -1,4 +1,12 @@
-function product_direct(M1::TrainType, M2::TrainType) where {TrainType <: Union{MPS, MPO}}
+"""
+    kron(mps1::MPS, mps2::MPS) -> MPS
+    kron(mpo1::MPO, mpo2::MPO) -> MPO
+
+    Kronecker product of two MPS or MPO objects.
+    The resulting MPS or MPO has the length equal to the sum of the lengths of the two inputs.
+    The link between the last tensor of the first MPS/MPO and the first tensor of the second MPS/MPO is set to a trivial scalar index (dimension 1).
+"""
+function Base.kron(M1::TrainType, M2::TrainType) where {TrainType <: Union{MPS, MPO}}
     L1, L2 = length(M1), length(M2) # Lengths of M1 and M2
     M = MPO(L1 + L2) # Combined MPO
     for i in 1:L1 # Copy tensors from M1
@@ -18,4 +26,6 @@ function product_direct(M1::TrainType, M2::TrainType) where {TrainType <: Union{
     return M
 end
 
-export product_direct
+export kron
+
+kron

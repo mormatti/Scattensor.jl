@@ -1,18 +1,13 @@
 """
-        plot_complex_colormap(Z::Matrix{<:Complex}; max_opacity = 1.0)
+    plot_complex_colormap(Z::Matrix{<:Complex}; max_opacity = 1.0)
 
-    Plots a complex matrix `Z` as a color map where the hue represents the angle of the complex numbers and the brightness represents their magnitude.
-    The color map is generated using the `angle_to_rgb` function, which maps angles to RGB colors.
+Plots a complex matrix `Z` as a color map where the hue represents the angle of the complex numbers and the brightness represents their magnitude.
+The color map is generated using the `angle_to_rgb` function, which maps angles to RGB colors.
+By default, the maximum opacity is set to 1.0 (fully opaque), but this can be adjusted with the `max_opacity` argument.
 
-    # Arguments
-    - `Z::Matrix{<:Complex}`: A matrix of complex numbers to be visualized.
-    - `max_opacity::Float64=1.0`: The maximum opacity for the color map. Default is 1.0 (fully opaque).
-
-    # Example
-        julia> Z = rand(Complex{Float64}, 10, 10)
-        julia> plot_complex_colormap(Z)
-    
-    # Function
+# Example
+    julia> Z = rand(Complex{Float64}, 10, 10)
+    julia> plot_complex_colormap(Z)
 """
 function plot_complex_colormap(Z::Matrix{<:Complex}; max_opacity = 1.0)
     mags = abs.(Z)

@@ -1,61 +1,47 @@
-# Old version, deprecated
-""" Generates the translation operator for a chain of `L` sites with local dimension `d`.
-    
-    ## Assumptions
-     - The system is assumed to be uniform, i.e. the local dimension is the same for all sites.
-     - The system, in order to perform a translation, must be in periodic boundary conditions.
+"""
+    operator_translation(AbstractMatrixType, d, L) -> AbstractMatrix
 
-    ## Inputs
-    - `L` is the number of sites of the chain.
-    - `d` is the local dimension.
+Returns the translation operator of the specified type `AbstractMatrixType` for a Hilbert space of dimension `d^L`, where `d` is an `Integer` representing the local dimension of each subsystem and `L` is an `Integer` representing the number of subsystems.
+The translation operator is computed in the canonical basis, i.e. in the tensor product basis of the subsystems in the choosen order.
 
-    ## Outputs
-    - The translation operator `T` in matrix form.
-    """
-function _generate_translation_operator_matrix(d::Integer, L::Integer)::SparseMatrixCSC{Int64, Int64}  
-    N = d^L
-    T = spzeros(Float64, N, N)
+# Examples
+    julia> operator_translation(Matrix, 2, 2)
+    4×4 Matrix{Int64}:
+    1  0  0  0
+    0  0  1  0
+    0  1  0  0
+    0  0  0  1
 
-    Lst = []
-    c = 0
-    for _ in 1:d
-        lst = []
-        for _ in 1:(N/d)
-            c = c + 1
-            push!(lst, c)
-        end
-        push!(Lst, lst)
-    end
-
-    for indL in eachindex(Lst)
-        lst = Lst[indL]
-        for ind in eachindex(lst)
-            j = lst[ind]
-            T[j, ((d*(j-1)+1)%N) + indL - 1] = 1
-        end
-    end
-
-    return T
+    julia> operator_translation(SparseMatrixCSC, 3, 2)
+    9×9 SparseMatrixCSC{Int64, Int64} with 9 stored entries:
+    1  ⋅  ⋅  ⋅  ⋅  ⋅  ⋅  ⋅  ⋅
+    ⋅  ⋅  ⋅  1  ⋅  ⋅  ⋅  ⋅  ⋅
+    ⋅  ⋅  ⋅  ⋅  ⋅  ⋅  1  ⋅  ⋅
+    ⋅  1  ⋅  ⋅  ⋅  ⋅  ⋅  ⋅  ⋅
+    ⋅  ⋅  ⋅  ⋅  1  ⋅  ⋅  ⋅  ⋅
+    ⋅  ⋅  ⋅  ⋅  ⋅  ⋅  ⋅  1  ⋅
+    ⋅  ⋅  1  ⋅  ⋅  ⋅  ⋅  ⋅  ⋅
+    ⋅  ⋅  ⋅  ⋅  ⋅  1  ⋅  ⋅  ⋅
+    ⋅  ⋅  ⋅  ⋅  ⋅  ⋅  ⋅  ⋅  1
+"""
+function operator_translation(::Type{Matrix}, d::Integer, L::Integer)
+    _hilbspace_dimension_warning(Matrix, d, L)
+    return Matrix(operator_translation(SparseMatrixCSC, d, L)) # delegate to SparseMatrixCSC implementation
 end
 
-function operator_translation(::Type{Matrix}, d::IntTyped, L::IntTypeL) where {IntTypeL <: Integer, IntTyped <: Integer}
-    return Matrix(operator_translation(SparseMatrixCSC, L, d))
-end
-
-function operator_translation(::Type{SparseMatrixCSC}, d::IntTyped, L::IntTypeL) where {IntTypeL <: Integer, IntTyped <: Integer}
+function operator_translation(::Type{SparseMatrixCSC}, d::Integer, L::Integer)
+    _hilbspace_dimension_warning(SparseMatrixCSC, d, L)
     # Generate all possible basis states as integer arrays
     basis_states = collect(Iterators.product(ntuple(_ -> 0:d-1, L)...))
     dim_H = d^L  # Total Hilbert space dimension
-    T = spzeros(Int, dim_H, dim_H)  # Initialize reflection matrix
-    
+    T = spzeros(Int, dim_H, dim_H)  # Initialize translation matrix
     # Map basis states to their reflected counterparts
     state_to_index = Dict(state => i for (i, state) in enumerate(basis_states))
-    
+    # Iterate over each basis state and fill the translation matrix
     for (i, state) in enumerate(basis_states)
         reflected_state = Tuple(circshift([i for i in state], 1))  # Reflect the state
         j = state_to_index[reflected_state]  # Get index of the reflected state
         T[i, j] = 1  # Note the definition: T|j⟩ = |j+1⟩
     end
-    
     return T
 end

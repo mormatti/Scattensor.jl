@@ -1,23 +1,14 @@
 """
-        complex_to_rgb(z::Complex) -> RGB
+    complex_to_rgb(z::Complex) -> RGB
 
-    Standard convention for coloring complex numbers in the Scattensor package.
-    Maps a complex number `z` to a color using HSV space where:
-    - Hue corresponds to the argument (angle) of `z`
-    - Value (brightness) and Saturation depend on the magnitude of `z` (can be adjusted)
+Maps a `Complex` number `z` to a color using HSV space where:
+- Hue corresponds to the argument (angle) of `z`
+- Value (brightness) and Saturation depend on the magnitude of `z` (can be adjusted)
 
-    # Arguments
-    - `z`: a complex number
-
-    # Returns
-    - A color in RGB format
-
-    # Example
-        julia> complex_to_rgb(1 + 1im)
-        RGB{Float64}(0.7071067811865475, 0.7071067811865475, 1.0)
-    
-    # Function
-    """
+# Example
+    julia> complex_to_rgb(1 + 1im)
+    RGB{Float64}(0.7071067811865475, 0.7071067811865475, 1.0)
+"""
 function complex_to_rgb(z::Complex)::RGB
     θ = angle(z)  # Argument (angle) of complex number
     r = abs(z)    # Magnitude of complex number

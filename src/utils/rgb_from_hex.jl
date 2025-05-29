@@ -1,22 +1,18 @@
 """
-        hex_to_rgb(hex::String; scale_255 = false) -> RGB
+    hex_to_rgb(hex::String; scale_255 = false) -> RGB
 
-    Convert a hexadecimal color string (e.g., `"#FF5733"`) to an `RGB` color object.
+Convert a hexadecimal color `hex` (e.g., `"#FF5733"`) to an `RGB` color object.
+The format can be either `"#RRGGBB"` or `"RRGGBB"`.
+By default, the RGB values are returned in the range of 0.0 to 1.0.
+If `scale_255` is set to `true`, the RGB values will be scaled to the 0–255 integer range.
 
-    # Arguments
-    - `hex::String`: A string representing the hexadecimal color. It should be in the format `"#RRGGBB"` or `"RRGGBB"`.
-    - `scale_255::Bool=false`: If `true`, the resulting RGB values will be scaled to the 0–255 integer range. If `false` (default), values will be in the 0.0–1.0 floating-point range.
+# Examples
+    julia> hex_to_rgb("#FF5733")
+    RGB{Float64}(1.0, 0.3411764705882353, 0.2)
 
-    # Returns
-    - An `RGB` object with red, green, and blue components either in the 0.0–1.0 or 0–255 range, depending on the `scale_255` keyword argument.
-
-    # Examples
-        julia> hex_to_rgb("#FF5733")
-        RGB{Float64}(1.0, 0.3411764705882353, 0.2)
-
-        julia> hex_to_rgb("#FF5733", scale_255=true)
-        RGB{Int64}(255, 87, 51)
-    """
+    julia> hex_to_rgb("#FF5733", scale_255=true)
+    RGB{Int64}(255, 87, 51)
+"""
 function hex_to_rgb(hex::String; scale_255 = false)::RGB
     rgb = parse(Colorant, hex)
     if scale_255
