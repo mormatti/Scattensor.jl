@@ -31,5 +31,10 @@ function get_uniform_localdim(mps::MPS)
 end
 
 function get_uniform_localdim(mpo::MPO)
-    return get_uniform_localdim(siteinds(mpo))
+    d1 = get_uniform_localdim(siteinds_main(mpo))
+    d2 = get_uniform_localdim(siteinds_primed(mpo))
+    if d1 != d2
+        error("Local dimensions of the MPO different between top and bottom indices.")
+    end
+    return d1  # Return the uniform local dimension
 end

@@ -1,34 +1,54 @@
-function local_expvals(ψ::MPS, A₀::MPO, d::dType) where {dType <: Integer}
-    if length(A₀) < length(ψ)
-        L₀ = length(A₀)
-        L = length(ψ)
-        Lc = L - L₀
-        vals = []
-        for j in 1:Lc
-            Aext = insert_local(j, A₀, Lc - j, d)
-            substitute_siteinds!(Aext, ψ)
-            push!(vals, real(inner(ψ', Aext, ψ)))
-        end
-        return vals
-    elseif length(A₀) == length(ψ)
-        return real(inner(mps', A₀, mps))
-    else
-        error("The length of the local operator cannot be greater than the one of the .")
+"""
+    local_expvals(mps, mpo; hermitian = true) -> Vector
+    local_expvals(mpsvector, mpo; hermitian = true) -> Matrix
+
+Calculates the local expectation values of an `MPS` with respect to a p-local operator given by an `MPO`.
+If the local operator is the same length as the `MPS`, it returns the inner product of the `MPS` with the product of the `MPO` and the `MPS`.
+If the local operator is shorter than the `MPS`, it computes the local expectation values for each position in the `MPS` where the operator can be applied.
+If the local operator is longer than the `MPS`, it raises an error.
+If the input is a vector of `MPS`, it computes the local expectation values for each `MPS` in the vector and returns a matrix of results.
+"""
+function local_expvals(mps::MPS, mpo::MPO; hermitian::Bool = true)
+    # We get the local dimension of the MPS and the MPO and we check that they are uniform
+    dmps = get_uniform_localdim(mps)
+    dA0 = get_uniform_localdim(mpo)
+    # We check that the local dimensions are the same
+    if dmps != dA0
+        error("Different local dimension of MPS (d = $dmps) and MPO (d = $dA0).")
     end
+    d = dmps
+    # We check that the local operator is not greater than the MPS
+    if length(mpo) < length(mps)
+        error("The length of the local operator cannot be greater than the one of the MPS.")
+    # If the local operator is the same length as the MPS, we can just return the inner product
+    elseif length(mpo) == length(mps)
+        val = product_inner(mps, product_matricial(mpo, mps))
+        val = hermitian ? real(val) : val
+        return val
+    end
+    Lc = length(mps) - length(mpo)
+    vals = []
+    for j in 1:Lc
+        Aext = insert_local(j, mpo, Lc - j)
+        val = product_inner(mps, product_matricial(Aext, mps))
+        val = hermitian ? real(val) : val
+        push!(vals, val)
+    end
+    return vals
 end
 
-function local_expvals(ψ::Vector{MPS}, A₀::MPO, d::dType) where {dType <: Integer}
+function local_expvals(mpsvector::Vector{MPS}, mpo::MPO; hermitian::Bool = true)::Matrix
     # We assert that all the MPS inside ψ has the same length
-    @assert all(mps -> length(mps) == length(first(ψ)), ψ) "All the MPS must have the same length"
-    println("")
-
+    if !all(mps -> length(mps) == length(first(mpsvector)), mpsvector)
+        error("All the MPS must have the same length in order to construct a matrix")
+    end
     timelapsed = 0
-    matrix = zeros(length(ψ), length(ψ[1]) - length(A₀))
-    N = length(ψ)
+    matrix = zeros(length(mpsvector), length(mpsvector[1]) - length(mpo))
+    N = length(mpsvector)
     for n in 1:N
         print("Step $n / $N. Estimated remaining time: $(timelapsed * (N - n)).")
         timelapsed = @elapsed begin
-        matrix[n,:] = local_expvals(ψ[n], A₀, d)
+        matrix[n,:] = local_expvals(mpsvector[n], mpo, hermitian = hermitian)
         end
         print("\r\u001b[2K")
     end

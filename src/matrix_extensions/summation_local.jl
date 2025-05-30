@@ -27,17 +27,7 @@ function summation_local(A0::Union{Matrix, SparseMatrixCSC}, d::Integer, L::Inte
     if d <= 0
         error("The local dimension d must be a positive integer, received: d = $d.")
     end
-    # Check if the local operator A0 is a square matrix
-    if size(A0)[1] != size(A0)[2]
-        error("The input matrix A0 must be square, i.e. have the same number of rows and columns.")
-    end
-    N0 = size(A0)[1]
-    L0 = log(N0) / log(d)
-    # Check that L0 is an Integer
-    if !(L0 ≈ round(L0))
-        error("Size of the local operator A0 incompatible with the local dimension d.")
-    end
-    L0 = Int(round(L0))
+    L0 = get_length_from_localdim(A0, d) # We compute the length of the local operator A0
     # Check that L0 is not larger than L
     if L0 > L
         error("Size of the local operator A0 larger than the system size L. Received: L0 = $L0, L = $L.")

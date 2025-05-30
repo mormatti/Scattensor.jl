@@ -1,24 +1,14 @@
 function wannier_symmetric(
-    ψ::Vector{BlochState{Vector{ComplexType}}}, # The states of the band,
-    H0::H0Type, # The local hamiltonian of the system
-    L0::L0Type, # The length of the support of the local hamiltonian
-    H::HType, # The hamiltonian of the system
-    L::LType, # The length of the chain
-    T::TType, # The translation operator of the system
-    R::RType, # The reflection operator of the system
-    d::dType, # The local dimension of the system
-    E0::E0Type, # The groundstate energy of the system
-    ) where {
-        ComplexType <: Complex,
-        H0Type <: Union{Hermitian, SparseMatrixCSC},
-        dType <: Integer,
-        LType <: Integer,
-        HType <: Union{Hermitian, SparseMatrixCSC},
-        L0Type <: Integer,
-        E0Type <: Real,
-        TType <: Union{Matrix, SparseMatrixCSC},
-        RType <: Union{Matrix, SparseMatrixCSC}
-        }
+    ψ::Vector{BlochState{Vector{<:Number}}}, # The states of the band,
+    H0:: AbstractMatrix, # The local hamiltonian of the system
+    L0::Integer, # The length of the support of the local hamiltonian
+    H::AbstractMatrix, # The hamiltonian of the system
+    L::Integer, # The length of the chain
+    T::AbstractMatrix, # The translation operator of the system
+    R::AbstractMatrix, # The reflection operator of the system
+    d::Integer, # The local dimension of the system
+    E0::Real, # The groundstate energy of the system
+    )
 
     println("")
     print("Computing the maximally localized symmetric Wannier function.")

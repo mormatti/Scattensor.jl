@@ -33,3 +33,12 @@ end
 function is_uniform_localdim(mpo::MPO)::Bool
     return is_uniform_localdim(siteinds(mpo))
 end
+
+function is_uniform_localdim(mpo::MPO)
+    d1 = get_uniform_localdim(siteinds_main(mpo))
+    d2 = get_uniform_localdim(siteinds_primed(mpo))
+    if d1 != d2
+        return false
+    end
+    return true
+end
