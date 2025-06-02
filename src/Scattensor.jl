@@ -45,7 +45,7 @@ module Scattensor
     include("itensor_extensions/operator_identity.jl")
     include("itensor_extensions/operator_translation.jl")
     include("itensor_extensions/partial_trace.jl")
-    include("itensor_extensions/product_direct.jl")
+    include("itensor_extensions/kron.jl")
     include("itensor_extensions/product_inner.jl")
     include("itensor_extensions/product_matricial.jl")
     include("itensor_extensions/product_outer.jl")

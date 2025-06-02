@@ -1,6 +1,7 @@
 """
+    local_expvals(mps, matrix; hermitian = true)
     local_expvals(mps, mpo; hermitian = true) -> Vector
-    local_expvals(mpsvector, mpo; hermitian = true) -> Matrix
+    local_expvals(mpsvector, mpo; hermitian = true) -> Mat
 
 Calculates the local expectation values of an `MPS` with respect to a p-local operator given by an `MPO`.
 If the local operator is the same length as the `MPS`, it returns the inner product of the `MPS` with the product of the `MPO` and the `MPS`.
@@ -18,23 +19,28 @@ function local_expvals(mps::MPS, mpo::MPO; hermitian::Bool = true)
     end
     d = dmps
     # We check that the local operator is not greater than the MPS
-    if length(mpo) < length(mps)
+    Lc = length(mps) - length(mpo)
+    if Lc < 0
         error("The length of the local operator cannot be greater than the one of the MPS.")
     # If the local operator is the same length as the MPS, we can just return the inner product
-    elseif length(mpo) == length(mps)
+    elseif Lc == 0
         val = product_inner(mps, product_matricial(mpo, mps))
         val = hermitian ? real(val) : val
         return val
     end
-    Lc = length(mps) - length(mpo)
     vals = []
-    for j in 1:Lc
-        Aext = insert_local(j, mpo, Lc - j)
+    for j in 1:(Lc+1)
+        Aext = insert_local(j - 1, mpo, Lc - j)
         val = product_inner(mps, product_matricial(Aext, mps))
         val = hermitian ? real(val) : val
         push!(vals, val)
     end
     return vals
+end
+
+function local_expvals(mps::MPS, matrix::Matrix; hermitian::Bool = true)
+    mpo = mpo_from_matrix(matrix, get_uniform_localdim(mps))
+    return local_expvals(mps, mpo, hermitian = hermitian)
 end
 
 function local_expvals(mpsvector::Vector{MPS}, mpo::MPO; hermitian::Bool = true)::Matrix

@@ -1,14 +1,4 @@
-function tdvp_time_evolution!(
-    data::Dict, 
-    H::MPO,
-    ψ::MPS, 
-    dt::dtType, 
-    Δt::ΔtType, 
-    H0::MPO; 
-    kwargs...) where {
-        dtType <: Real, 
-        ΔtType <: Real
-        }
+function tdvp_time_evolution!(data::Dict, H::MPO, ψ::MPS, dt::Real, Δt::Real, H0::MPO; kwargs...)
     
     # Getting the local dimension, ensuring uniformity
     sites = siteinds(ψ)

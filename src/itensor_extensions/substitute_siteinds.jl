@@ -1,14 +1,10 @@
 function substitute_siteinds!(mpo1::MPO, mpo2::MPO)
-    @assert length(mpo1) == length(mpo2) "The MPOs must have the same length."
+    # TODO: fix all of these functions...
     si1 = siteinds(mpo1)
     si2 = siteinds(mpo2)
     for j in eachindex(mpo1)
-        mpo1[j] = mpo1[j] * delta(si1[j][1], si2[j][1])
-        mpo1[j] = mpo1[j] * delta(si1[j][2], si2[j][2])
-        # TODO: nonsense to do that (it affects performance), one should do sometinhg like:
-        # ITensors.replaceind(mpo1[j], si1[j][1], si2[j][1])
-        # ITensors.replaceind(mpo1[j], si1[j][2], si2[j][2])
-        # But dunno it does not work! Fix it.
+        replaceind!(mpo1[j], si1[j][1], si2[j][1])
+        replaceind!(mpo1[j], si1[j][2], si2[j][2])
     end
 end
 
@@ -22,6 +18,7 @@ function substitute_siteinds!(mps1::MPS, mps2::MPS)
 end
 
 function substitute_siteinds!(mps::MPS, mpo::MPO)
+    # TODO: ok but this is not the right way to do it. Fix it.
     error("Don't use this method, substitute mpo indices with the mps one instead.")
 end
 

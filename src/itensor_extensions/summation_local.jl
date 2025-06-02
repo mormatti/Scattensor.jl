@@ -1,14 +1,4 @@
-function summation_local(
-    mpo::MPO, 
-    d::dType, 
-    L::LType; 
-    func::Function = identity, 
-    cutoff = 10^(-12)
-    ) where {
-        LType <: Integer, 
-        dType <: Integer
-        }
-        
+function summation_local(mpo::MPO, d::Integer, L::Integer; func::Function = identity; kwargs...)
     L0 = length(mpo)
     Lc = L - L0
     if func == identity
@@ -21,7 +11,7 @@ function summation_local(
         substitute_siteinds!(tosum, finalsum)
         finalsum += tosum
     end
-    finalsum = truncate(finalsum, cutoff = cutoff)
+    finalsum = truncate(finalsum, kwargs...)
 end
 
 export summation_local

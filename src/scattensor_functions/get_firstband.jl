@@ -1,5 +1,4 @@
-function get_firstband(states::Vector{<:BlochStateType})
-    
+function get_firstband(states::Vector{BlochStateType}) where BlochStateType <: BlochState    
     if isempty(states)
         return Vector{BlochStateType}()
     else
