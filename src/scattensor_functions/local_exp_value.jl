@@ -1,11 +1,12 @@
-function local_exp_value(A0::A0Type, v::Vector{ventriesType}, L0::L0Type, d::dType, L::LType; pbc = true, addconst::addconstType = 0.0) where {
-    A0Type <: Union{Hermitian, SparseMatrixCSC},
-    ventriesType <: Complex,
-    L0Type <: Integer,
-    dType <: Integer,
-    LType <: Integer,
-    addconstType <: Real,
-    }
+function local_exp_value(
+    A0::Union{Matrix, SparseMatrixCSC},
+    v::Vector{<:Union{Complex, Real}},
+    L0::Integer,
+    d::Integer,
+    L::Integer;
+    pbc = true,
+    addconst::Real = 0.0
+    )
 
     @assert size(A0)[1] == size(A0)[2] == d^L0 "Size of A0 incompatible."
     @assert length(v) == d^L "Size of v incompatible."

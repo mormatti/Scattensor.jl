@@ -1,7 +1,7 @@
 """
     local_expvals(mps, matrix; hermitian = true)
     local_expvals(mps, mpo; hermitian = true) -> Vector
-    local_expvals(mpsvector, mpo; hermitian = true) -> Mat
+    local_expvals(mpsvector, mpo; hermitian = true) -> Matrx
 
 Calculates the local expectation values of an `MPS` with respect to a p-local operator given by an `MPO`.
 If the local operator is the same length as the `MPS`, it returns the inner product of the `MPS` with the product of the `MPO` and the `MPS`.
@@ -44,7 +44,6 @@ function local_expvals(mps::MPS, matrix::Matrix; hermitian::Bool = true)
 end
 
 function local_expvals(mpsvector::Vector{MPS}, mpo::MPO; hermitian::Bool = true)::Matrix
-    # We assert that all the MPS inside ψ has the same length
     if !all(mps -> length(mps) == length(first(mpsvector)), mpsvector)
         error("All the MPS must have the same length in order to construct a matrix")
     end

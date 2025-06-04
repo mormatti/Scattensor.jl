@@ -1,6 +1,16 @@
-using ITensors
-using ITensorMPS
+"""
+    operator_translation(MPO, d, L) -> MPO
 
+Generate the translation operator in MPO representation, for a system of `L` sites with local dimension `d`.
+The result bond dimension is `d^2` since the swapping operator is two-site.
+
+# Example
+    julia> operator_translation(MPO, 2, 3)
+    MPO
+    [1] ((dim=2|id=13|"Site,n=1")', (dim=2|id=13|"Site,n=1"), (dim=4|id=855|"Link,l=1"))
+    [2] ((dim=2|id=403|"Site,n=2")', (dim=2|id=403|"Site,n=2"), (dim=4|id=855|"Link,l=1"), (dim=4|id=879|"Link,l=2"))
+    [3] ((dim=2|id=617|"Site,n=3")', (dim=2|id=617|"Site,n=3"), (dim=4|id=879|"Link,l=2"))
+"""
 function operator_translation(::Type{MPO}, d::Integer, L::Integer)
     # First tensor (A)
     at = Index(d)

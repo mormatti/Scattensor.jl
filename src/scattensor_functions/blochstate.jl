@@ -1,5 +1,5 @@
 mutable struct BlochState{T}
-    repr::T # The state of the Bloch state, in whatever representation (Vector, MPS, etc.)
+    data::T # The state of the Bloch state, in whatever representation.
     energy::Real # The energy of the Bloch state
     kfraction::Rational # The momentum of the Bloch state (in Rational representation)
     parityphase::Real

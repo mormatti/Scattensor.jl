@@ -37,18 +37,22 @@ module Scattensor
     # ITensor extensions
     include("itensor_extensions/apply_reflection.jl")
     include("itensor_extensions/apply_translation.jl")
+    include("itensor_extensions/blind_product_inner.jl")
+    include("itensor_extensions/blind_product_matricial.jl")
+    include("itensor_extensions/blind_product_outer.jl")
     include("itensor_extensions/entanglement_entropy.jl")
+    include("itensor_extensions/get_uniform_localdim.jl")
     include("itensor_extensions/insert_local.jl")
+    include("itensor_extensions/is_uniform_localdim.jl")
+    include("itensor_extensions/kron.jl")
     include("itensor_extensions/local_expvals.jl")
+    include("itensor_extensions/matrix_from_mpo.jl")
     include("itensor_extensions/mpo_from_matrix.jl")
     include("itensor_extensions/mps_from_vector.jl")
     include("itensor_extensions/operator_identity.jl")
     include("itensor_extensions/operator_translation.jl")
     include("itensor_extensions/partial_trace.jl")
-    include("itensor_extensions/kron.jl")
-    include("itensor_extensions/product_inner.jl")
-    include("itensor_extensions/product_matricial.jl")
-    include("itensor_extensions/product_outer.jl")
+    include("itensor_extensions/siteinds_mpo.jl")
     include("itensor_extensions/substitute_siteinds.jl")
     include("itensor_extensions/summation_local.jl")
     include("itensor_extensions/tdvp_time_evolution.jl")
@@ -56,7 +60,6 @@ module Scattensor
     # Scattensor functions
     include("scattensor_functions/blochstate.jl")
     include("scattensor_functions/compute_smatrix.jl")
-    include("scattensor_functions/diagonalization_HU.jl")
     include("scattensor_functions/dispersion_relation.jl")
     include("scattensor_functions/fourier_transform.jl")
     include("scattensor_functions/get_firstband.jl")
@@ -67,5 +70,8 @@ module Scattensor
     include("scattensor_functions/plot_disprel.jl")
     include("scattensor_functions/pop_groundstate.jl")
     include("scattensor_functions/wannier_symmetric.jl")
+
+    # Deprecated functions
+    include("deprecated_functions/diagonalization_HU.jl")
 
 end # module Scattensor

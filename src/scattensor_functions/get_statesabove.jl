@@ -1,4 +1,4 @@
-function get_statesabove(states::Vector{BlochStateType}, enrg::RealType) where {BlochStateType <: BlochState, RealType <: Real}
+function get_statesabove(states::Vector{<:BlochState}, enrg::Real)
     return filter(state -> energy(state) >= enrg, states)
 end
 
