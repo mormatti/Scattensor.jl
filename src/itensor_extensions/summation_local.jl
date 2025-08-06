@@ -1,4 +1,4 @@
-# TODO: improve this function, considering a method which does not implement compression.
+# TODO: improve this function, considering a method which does not implement compression (hard task).
 
 """
     summation_local(mpo, L; convolution = identity, kwargs...)
@@ -14,31 +14,29 @@ function summation_local(mpo::MPO, L::Integer; convolution::Function = identity,
     end
     L0 = length(mpo)
     Lc = L - L0
-    # We identify the convolution function
+    # If the concolution is the identity function, we define it as a function returning 1
     if convolution == identity
         f(j::Integer) = 1
         convolution = f
-    else
-        if !hasmethod(sin, Tuple{Int})
-            error("The convolution function must accept an integer argument.")
-        end
     end
-    # We assert that the convolution function returns only complex or real numbers
+    # We construct the coefficients list
     coefficients = []
     for j in 1:Lc
         el = convolution(j)
         if !(el <: Union{Real, Complex})
-            error("The convolution function must return only real numbers.")
+            error("The convolution function must return only real or complex numbers.")
         end
         push!(coefficients, el)
     end
+    # We compute the final MPO summation
     finalsum = coefficients[1] * insert_local(1 - 1, mpo, Lc)
     for j in 2:(Lc+1)
-        tosum = coefficients[j] * insert_local(j - 1, mpo, Lc - j + 1)
+        tosum = coefficients[j] * insert_local(j - 1, mpo, Lc - (j - 1))
         substitute_siteinds!(tosum, finalsum)
         finalsum += tosum
     end
     finalsum = truncate(finalsum, kwargs...)
+    return finalsum
 end
 
 export summation_local

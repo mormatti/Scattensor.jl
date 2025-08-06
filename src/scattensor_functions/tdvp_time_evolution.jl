@@ -1,3 +1,5 @@
+# TODO: tidy and document this function
+
 function tdvp_time_evolution!(data::Dict, H::MPO, ψ::MPS, dt::Real, Δt::Real, H0::MPO; kwargs...)
     
     # Getting the local dimension, ensuring uniformity

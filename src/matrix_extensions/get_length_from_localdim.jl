@@ -19,7 +19,7 @@ function get_length_from_localdim(vector::Vector, d::Integer)::Integer
     return get_length_from_localdim(N, d)
 end
 
-function get_length_from_localdim(matrix::Matrix, d::Integer)::Integer
+function get_length_from_localdim(matrix::AbstractMatrix, d::Integer)::Integer
     # Check if matrix is a square matrix
     N = size(matrix)[1]
     N2 = size(matrix)[2]
@@ -31,3 +31,5 @@ function get_length_from_localdim(matrix::Matrix, d::Integer)::Integer
     end
     return get_length_from_localdim(N, d)
 end
+
+export get_length_from_localdim

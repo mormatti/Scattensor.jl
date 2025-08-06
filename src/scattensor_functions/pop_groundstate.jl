@@ -1,4 +1,4 @@
-function pop_groundstate!(states::Vector{BlochStateType}) where {BlochStateType <: BlochState}
+function pop_groundstate!(states::Vector{<:BlochState})
     # We identify the position of the state which have the lowest energy
     i0 = 1
     for i in eachindex(states)

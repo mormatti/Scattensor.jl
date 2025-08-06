@@ -13,8 +13,13 @@ module Scattensor
     using LaTeXStrings
 
     # Abstract functions
-    include("abstract_functions/operator_identity.jl")
     include("abstract_functions/kron_power.jl")
+    include("abstract_functions/operator_identity.jl")
+    include("abstract_functions/operator_reflection.jl")
+    include("abstract_functions/operator_translation.jl")
+
+    # Deprecated functions
+    include("deprecated_functions/diagonalization_HU.jl")
 
     # Utils
     include("utils/periodic_modulus.jl")
@@ -25,6 +30,7 @@ module Scattensor
     include("utils/rgb_from_hex.jl")
 
     # Matrix extensions
+    include("matrix_extensions/get_length_from_localdim.jl")
     include("matrix_extensions/hilbspace_warning.jl")
     include("matrix_extensions/kron_power.jl")
     include("matrix_extensions/mathematica_format.jl")
@@ -55,9 +61,8 @@ module Scattensor
     include("itensor_extensions/siteinds_mpo.jl")
     include("itensor_extensions/substitute_siteinds.jl")
     include("itensor_extensions/summation_local.jl")
-    include("itensor_extensions/tdvp_time_evolution.jl")
 
-    # Scattensor functions
+    # Scattensor functions (to check here...)
     include("scattensor_functions/blochstate.jl")
     include("scattensor_functions/compute_smatrix.jl")
     include("scattensor_functions/dispersion_relation.jl")
@@ -70,8 +75,6 @@ module Scattensor
     include("scattensor_functions/plot_disprel.jl")
     include("scattensor_functions/pop_groundstate.jl")
     include("scattensor_functions/wannier_symmetric.jl")
-
-    # Deprecated functions
-    include("deprecated_functions/diagonalization_HU.jl")
+    include("scattensor_functions/tdvp_time_evolution.jl")
 
 end # module Scattensor

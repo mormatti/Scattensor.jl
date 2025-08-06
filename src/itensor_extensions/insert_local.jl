@@ -5,9 +5,9 @@ Inserts a local MPO at positions L1 and L2 in a larger MPO, returning the result
 The local MPO is inserted in the form of a direct product with identity operators at the other positions.
 
 # Example
-julia> sites = siteinds(3,4)
-julia> localmpo = random_mpo(sites)
-julia> result_mpo = insert_local(4, localmpo, 2)
+    julia> sites = siteinds(3,4)
+    julia> localmpo = random_mpo(sites)
+    julia> result_mpo = insert_local(4, localmpo, 2)
 """
 function insert_local(L1::Integer, mpo::MPO, L2::Integer)
     # We get the local dimension of the MPO, returning an error if it is not uniform

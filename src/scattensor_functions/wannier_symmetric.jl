@@ -10,15 +10,23 @@ function wannier_symmetric(
     E0::Real, # The groundstate energy of the system
     )
 
-    println("")
-    print("Computing the maximally localized symmetric Wannier function.")
-    println("")
+    println("Computing the maximally localized symmetric Wannier function.")
 
     # TODO: WARNING: this function only with L odd and if k = 0 exists but not k = π
     # Fix it when it is possible
 
+    # We check that all the momenta are expressed as fractions
+    if !all(state -> state.koverpi isa Rational, ψ)
+        error("To select the momenta, the koverpi field must be a fraction.")
+    end
+    # We check that all momenta are positive
+    if !all(state -> state.koverpi >= 0, ψ)
+        error("To get a symmetrized Wannier, only positive momenta are needed. Please select them.")
+    end
     # We first check that ψ is really a single band, i.e. that two different states has different momentum.
-    length(unique(x.kfraction for x in ψ)) == length(ψ) || error("ψ must be a single band.")
+    if !length(unique(x.koverpi for x in ψ)) == length(ψ)
+        error("ψ must be a single band.")
+    end
 
     # We compute the sum of the energy of all the states
     H = H - I * E0
