@@ -16,7 +16,7 @@ If `n` is zero, it returns the identity matrix 1x1 of size (1) of the same type 
     julia> kron_power([1.0 2.0; 3.0 4.0], 0)
     1×1 Matrix{Int64}:
     1
-    """
+"""
 function kron_power(A::AbstractMatrix, n::Integer)
     if n == 0
         return operator_identity(typeof(A), 1)  # Returns the identity matrix of size A

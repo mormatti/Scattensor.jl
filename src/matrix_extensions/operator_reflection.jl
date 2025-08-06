@@ -1,4 +1,3 @@
-
 """
     operator_reflection(AbstractMatrixType, d, L) -> AbstractMatrix
 

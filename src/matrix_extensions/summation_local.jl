@@ -1,10 +1,9 @@
-# TODO write better documentation for this function.
 """
     summation_local(A0, d, L; pbc = false) -> SparseMatrixCSC
 
 Computes the summation of the (p-local) operator `A0` over the chain of length `L`.
 Starting from `A0`, constructs the operator `A1 + A2 + A3 + ... + AL` where
-`Aj = I ⊗ I ⊗ ... ⊗ A0 ⊗ I ⊗ ... ⊗ I`, where I are identities of local dimension d,
+`Aj = I ⊗ I ⊗ ... ⊗ A0 ⊗ I ⊗ ... ⊗ I`, I are identities of local dimension d,
 and `A0` is placed in the `j`-th position. In other words, it computes the summation ΣⱼAj.
 If `pbc` is `true`, the chain is considered periodic, otherwise it is open.
 
