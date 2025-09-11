@@ -1,3 +1,4 @@
+# TODO: write a documentation for this function.
 function dispersion_relation(H::AbstractMatrix, T::AbstractMatrix, L::Integer; nlevels::Integer = 2, reflectionsym = false, kwargs...)
     DenseType = Matrix
     SparseType = SparseMatrixCSC
@@ -111,7 +112,7 @@ function dispersion_relation(H::AbstractMatrix, T::AbstractMatrix, L::Integer; n
     return disprelvec
 end
 
-# MPO case => method is Tensor Networks
+# TODO: Implement the dispersion_relation function with a pure tensor network approach.
 function dispersion_relation(H0::MPO; nlevels::Int = 3, kwargs...)
     error("Method disprel with Pure Tensor Newtork approach not implemented yet :(")
 end

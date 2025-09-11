@@ -1,3 +1,5 @@
+# TODO: all of this code is not yet fully functional, it needs to be tested and debugged.
+
 function smatrix_real_space(d::Integer, H::MPO, ψ0::MPS, w::MPO, t::Real, N::Integer, χmax::Integer)
     # TODO assert that the local dimension of the MPS is the same as the one of the MPO
     # TODO assert that ψ0 is the groundstate of the Hamiltonian H
@@ -245,8 +247,6 @@ function smatrix_expansion_real_space_tdvp(
     return A
 end
 
-export smatrix_expansion_real_space_tdvp
-
 # Given A with 4 j indices and 1 n index, we can compute an S-matrix element in the momentum space
 function smatrix_element_momentum_space_tdvp(A, k1, k2, k1′, k2′)
     result = 0
@@ -300,5 +300,3 @@ function two_particle_wavefunction(ψ::MPS, ψ0::MPS, W::MPO, d::Int; maxdim::In
     end
     return M
 end
-
-export two_particle_wavefunction

@@ -3,9 +3,9 @@
 
 A structure representing a Bloch state in a quantum system.
 The field `data::T` gives the representation of the Bloch state, in whatever format (e.g. `T` can be a `Vector` or `MPS`).
-The `energy::Real` is the eigenvalue associated with the Bloch state, while `kfraction::Rational` is the crystal momentum in units of π.
-This allows to use the `Rational` type (Fractions) to represent `k`, which is gives a lot of advantages computationally.
-The `parityangle::Real` is the quantity θ, where eⁱᶿ = ⟨-k|R|k⟩, which can be shown to be a parity.
+The `energy::Real` is the eigenvalue associated with the Bloch state, while `koverpi::Rational` is the crystal momentum in units of π.
+The `koverpi` is computed so that it falls within the range [-1, 1).
+Expressing the momentum as units of π is useful for periodic systems, where the momentum is typically defined as a Rational type.
 """
 mutable struct BlochState{T}
     data::T # The state of the Bloch state, in whatever representation.

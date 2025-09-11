@@ -1,3 +1,4 @@
+# TODO: Search if it exist a fast implementation of the Fourier transform in Julia.
 function fourier_transform(M::Matrix, N1::Int, N2::Int)
     L1 = size(M, 1)
     L2 = size(M, 2)
@@ -15,8 +16,6 @@ function fourier_transform(M::Matrix, N1::Int, N2::Int)
     end
     return result * (1 / sqrt(L1 * L2))
 end
-
-export fourier_transform
 
 function fourier_transform(M::Matrix)
     return fourier_transform(M, size(M, 1), size(M, 2))

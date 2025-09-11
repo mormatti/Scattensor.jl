@@ -1,7 +1,6 @@
-# Be careful, the momentum must be a fraction possibly... (otherwise, fix it)
-
-function get_statespositivek(states::Vector{<:BlochState}, moment::Real)
+# TODO: write a documentation for this function.
+function get_statespositivek(states::Vector{<:BlochState})
     return filter(state -> momentum(state) >= 0, states)
 end
 
-export get_statesbelow
+export get_statespositivek

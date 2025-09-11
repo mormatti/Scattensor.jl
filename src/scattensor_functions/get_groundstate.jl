@@ -1,5 +1,5 @@
 # TODO: find a way to write these function in a more efficient (complexity) and compact way
-
+# TODO: write a documentation for this function.
 function get_groundstate(states::Vector{<:BlochState})
     igs = 1
     for i in eachindex(states)
