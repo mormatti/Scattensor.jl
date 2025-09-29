@@ -17,54 +17,65 @@ especially when performing operations like contraction or applying operators.
     julia> siteinds(mps1) == siteinds(mps2)
     true
 """
+
 function substitute_siteinds!(mpo1::MPO, mpo2::MPO; checklength::Bool = true)
-    if checklength
-        if length(mpo1) != length(mpo2)
-            error("The two MPOs must have the same length.")
-        end
+    if checklength && length(mpo1) != length(mpo2)
+        error("The two MPOs must have the same length.")
     end
     si1 = siteinds(mpo1)
     si2 = siteinds(mpo2)
-    if si1 != si2
-        for j in eachindex(mpo1)
-            replaceind!(mpo1[j], si1[j][1], si2[j][1])
-            replaceind!(mpo1[j], si1[j][2], si2[j][2])
-        end
+    for j in eachindex(mpo1)
+        old = si1[j]
+        new = si2[j]
+        old == new && continue
+        @assert length(old) == length(new) "At site $j, different number of site indices"
+        # Pair old -> new (bra->bra, ket->ket) by position
+        pairs = map(=>, old, new)
+        mpo1[j] = replaceinds(mpo1[j], pairs...)
     end
+    return mpo1
 end
 
 function substitute_siteinds!(mps1::MPS, mps2::MPS; checklength::Bool = true)
-    if checklength
-        if length(mps1) != length(mps2)
-            error("The two MPS must have the same length.")
-        end
+    if checklength && length(mps1) != length(mps2)
+        error("The two MPS must have the same length.")
     end
     si1 = siteinds(mps1)
     si2 = siteinds(mps2)
-    if si1 != si2
-        for j in eachindex(mps1)
-            replaceind!(mps1[j], si1[j], si2[j])
-        end
+    for j in eachindex(mps1)
+        old = si1[j]
+        new = si2[j]
+        old == new && continue
+        mps1[j] = replaceinds(mps1[j], old => new)
     end
+    return mps1
 end
 
-function substitute_siteinds!(mps::MPS, mpo::MPO; checklength::Bool = true)
-    if checklength
-        if length(mps) != length(mpo)
-            error("The MPS and the MPO must have the same length.")
-        end
+# substitute_siteinds(mps1::MPS, mps2::MPS; kwargs...) =
+#     substitute_siteinds!(copy(mps1), mps2; kwargs...)
+
+function substitute_siteinds!(mps::MPS, mpo::MPO; checklength::Bool = true, which::Symbol = :ket)
+    if checklength && length(mps) != length(mpo)
+        error("The MPS and MPO must have the same length.")
     end
-    simps = siteinds(mps)
-    simpo = siteinds_main(mpo)
-    if simps != simpo
-        for j in eachindex(mps)
-            replaceind!(mps[j], simps[j], simpo[j])
-        end
+    si_mps = siteinds(mps)
+    si_mpo = siteinds(mpo)
+
+    sel = which === :ket ? (j->si_mpo[j][2]) :
+          which === :bra ? (j->si_mpo[j][1]) :
+          error("`which` must be :ket or :bra")
+
+    for j in eachindex(mps)
+        old = si_mps[j]
+        new = sel(j)
+        old == new && continue
+        mps[j] = replaceinds(mps[j], old => new)
     end
+    return mps
 end
 
+#=
 function substitute_siteinds!(mpo::MPO, mps::MPS; checklength::Bool = true)
-    @warn "mpo -> mps indices substitution is not recommended, since it could be ambiguous in its definition. Prefer using mps -> mpo instead."
     if checklength
         if length(mpo) != length(mps)
             error("The MPO and the MPS must have the same length.")
@@ -73,9 +84,31 @@ function substitute_siteinds!(mpo::MPO, mps::MPS; checklength::Bool = true)
     simpo = siteinds(mpo)
     simps = siteinds(mps)
     for j in eachindex(mpo)
-        replaceind!(mpo[j], simpo[j][1], simps[j])
-        replaceind!(mpo[j], simpo[j][2], prime(simps[j]))
+        replaceind!(mpo[j], simpo[j][1], prime(simps[j]))
+        replaceind!(mpo[j], simpo[j][2], simps[j])
     end
 end
+=#
 
-export substitute_siteinds!
+# substitute_siteinds deprecated!
+# Now use the extension replace_siteinds
+
+function ITensorMPS.replace_siteinds!(mpo::MPO, sites::AbstractVector{<:Index}; checklength::Bool = true)
+    if checklength && length(mpo) != length(sites)
+        error("MPO length must match length(sites).")
+    end
+    si = siteinds(mpo)
+    for j in eachindex(mpo)
+        inds = si[j]
+        @assert length(inds) == 2 "MPO at site $j must have two site indices"
+        old_ket, old_bra = inds[2], inds[1]
+        new_ket = sites[j]
+        new_bra = prime(sites[j])
+        pairs = Pair{Index,Index}[]
+        old_ket != new_ket && push!(pairs, old_ket => new_ket)
+        old_bra != new_bra && push!(pairs, old_bra => new_bra)
+        isempty(pairs) && continue
+        mpo[j] = replaceinds(mpo[j], pairs...)
+    end
+    return mpo
+end

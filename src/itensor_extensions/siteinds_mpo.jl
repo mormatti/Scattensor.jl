@@ -24,10 +24,26 @@ This allows for easy access to the site indices of the MPO.
 """
 function siteinds_main(mpo::MPO)
     v = siteinds(mpo)
-    return [[v[i][j] for i in eachindex(v)] for j in 1:length(v[1])][2]
+    list = [[v[i][j] for i in eachindex(v)] for j in 1:length(v[1])][2]
+    for ind in list
+        if plev(ind) != 0
+            error("MPO has wrong prime levels in site indices.")
+        end
+    end
+    return list
 end
+
+export siteinds_main
 
 function siteinds_primed(mpo::MPO)
     v = siteinds(mpo)
-    return [[v[i][j] for i in eachindex(v)] for j in 1:length(v[1])][1]
+    list = [[v[i][j] for i in eachindex(v)] for j in 1:length(v[1])][1]
+    for ind in list
+        if plev(ind) != 1
+            error("MPO has wrong prime levels in site indices.")
+        end
+    end
+    return list
 end
+
+export siteinds_primed

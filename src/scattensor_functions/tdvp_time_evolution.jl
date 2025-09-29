@@ -1,6 +1,6 @@
 # TODO: tidy and document this function
 
-function tdvp_time_evolution!(data::Dict, H::MPO, ψ::MPS, dt::Real, Δt::Real, H0::MPO; kwargs...)
+function tdvp_time_evolution!(data::Dict, H::MPO, ψ::MPS, dt::Real, Δt::Real, H0::MPO; cutoff = default_cutoff, maxdim = default_maxdim, kwargs...)
     
     # Getting the local dimension, ensuring uniformity
     sites = siteinds(ψ)
@@ -43,9 +43,8 @@ function tdvp_time_evolution!(data::Dict, H::MPO, ψ::MPS, dt::Real, Δt::Real, 
     for n in 1:N
 
         timelapsed = @elapsed begin
-            ψ = tdvp(H, -im * dt, ψ; kwargs...)
+            ψ = tdvp(H, -im * dt, ψ; cutoff = cutoff, maxdim = maxdim, kwargs...)
             normalize!(ψ)
-
             push!(data[:states], ψ)
             push!(data[:linkdimens], linkdims(ψ))
             push!(data[:energies], local_expvals(ψ, H0, data[:d]))

@@ -16,7 +16,7 @@ function insert_local(L1::Integer, mpo::MPO, L2::Integer)
     idm(L) = operator_identity(MPO, d, L)
     # We insert the local MPO at position L1 and L2
     if L1 == 0 && L2 == 0
-        return c
+        return mpo
     elseif L1 == 0
         return kron(mpo, idm(L2))
     elseif L2 == 0

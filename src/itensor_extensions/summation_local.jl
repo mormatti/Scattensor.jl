@@ -8,10 +8,11 @@ The `convolution` function is applied to the indices of the MPO, and it must ret
 In other words, it computes the sum `ΣⱼcⱼAⱼ`, where `Aⱼ` are the MPO tensors and `cⱼ` are the coefficients returned by the `convolution` function.
 If the `convolution` function is not provided, it defaults to the identity function, which returns 1 for each index.
 """
-function summation_local(mpo::MPO, L::Integer; convolution::Function = identity, kwargs...)
+function summation_local(mpo::MPO, L::Integer; convolution::Function = identity, pbc = false, cutoff = default_cutoff, maxdim = default_maxdim)
     if !is_uniform_localdim(mpo)
         error("The MPO must have uniform local dimensions.")
     end
+    d = get_uniform_localdim(mpo)
     L0 = length(mpo)
     Lc = L - L0
     # If the concolution is the identity function, we define it as a function returning 1
@@ -21,21 +22,34 @@ function summation_local(mpo::MPO, L::Integer; convolution::Function = identity,
     end
     # We construct the coefficients list
     coefficients = []
-    for j in 1:Lc
+    for j in 1:(Lc+1)
         el = convolution(j)
-        if !(el <: Union{Real, Complex})
+        if !(typeof(el) <: Union{Real, Complex})
             error("The convolution function must return only real or complex numbers.")
         end
         push!(coefficients, el)
     end
     # We compute the final MPO summation
     finalsum = coefficients[1] * insert_local(1 - 1, mpo, Lc)
+    finalsites = siteinds_main(finalsum)
     for j in 2:(Lc+1)
         tosum = coefficients[j] * insert_local(j - 1, mpo, Lc - (j - 1))
-        substitute_siteinds!(tosum, finalsum)
-        finalsum += tosum
+        replace_siteinds!(tosum, finalsites)
+        finalsum = finalsum + tosum
+        truncate!(finalsum, cutoff = cutoff, maxdim = maxdim)
     end
-    finalsum = truncate(finalsum, kwargs...)
+    # We finally sum also pbc contribution if needed
+    if pbc
+        translationop = operator_translation(MPO, d, L)
+        replace_siteinds!(translationop, finalsites)
+        finalterm = coefficients[Lc+1] * insert_local(Lc, mpo, 0)
+        replace_siteinds!(finalterm, finalsites)
+        for _ in (Lc+2):L
+            finalterm = product(adjoint_mpo(translationop), finalterm, translationop)
+            finalsum = finalsum + finalterm
+            truncate!(finalsum, cutoff = cutoff, maxdim = maxdim)
+        end
+    end
     return finalsum
 end
 

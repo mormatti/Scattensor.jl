@@ -1,3 +1,4 @@
+# TODO Check this function and fix the pbc not used (maybe there is a problem there?)
 function local_exp_value(
     A0::Union{Matrix, SparseMatrixCSC},
     v::Vector{<:Union{Complex, Real}},

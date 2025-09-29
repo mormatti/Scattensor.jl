@@ -10,6 +10,10 @@ If the local operator is longer than the `MPS`, it raises an error.
 If the input is a vector of `MPS`, it computes the local expectation values for each `MPS` in the vector and returns a matrix of results.
 """
 function local_expvals(mps::MPS, mpo::MPO; hermitian::Bool = true)
+    # We check that mps and mpo have compatible siteinds
+    if siteinds(mps) != siteinds_main(mpo)
+        error("MPS and MPO must share the same site indices.")
+    end
     # We get the local dimension of the MPS and the MPO and we check that they are uniform
     dmps = get_uniform_localdim(mps)
     dA0 = get_uniform_localdim(mpo)
@@ -24,14 +28,15 @@ function local_expvals(mps::MPS, mpo::MPO; hermitian::Bool = true)
         error("The length of the local operator cannot be greater than the one of the MPS.")
     # If the local operator is the same length as the MPS, we can just return the inner product
     elseif Lc == 0
-        val = product_inner(mps, product_matricial(mpo, mps))
+        val = inner(mps', mpo, mps)
         val = hermitian ? real(val) : val
         return val
     end
     vals = []
     for j in 1:(Lc+1)
         Aext = insert_local(j - 1, mpo, Lc - j)
-        val = product_inner(mps, product_matricial(Aext, mps))
+        replace_siteinds!(Aext, siteinds(mps))
+        val = inner(mps', Aext, mps)
         val = hermitian ? real(val) : val
         push!(vals, val)
     end
@@ -40,6 +45,7 @@ end
 
 function local_expvals(mps::MPS, matrix::Matrix; hermitian::Bool = true)
     mpo = mpo_from_matrix(matrix, get_uniform_localdim(mps))
+    replace_siteinds!(mpo, siteinds(mps))
     return local_expvals(mps, mpo, hermitian = hermitian)
 end
 

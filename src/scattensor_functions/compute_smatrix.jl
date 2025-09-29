@@ -1,4 +1,5 @@
 # TODO: all of this code is not yet fully functional, it needs to be tested and debugged.
+# TODO: this code still use substitute_siteinds and blind_product_inner... fix it.
 
 function smatrix_real_space(d::Integer, H::MPO, ψ0::MPS, w::MPO, t::Real, N::Integer, χmax::Integer)
     # TODO assert that the local dimension of the MPS is the same as the one of the MPO
@@ -11,7 +12,7 @@ function smatrix_real_space(d::Integer, H::MPO, ψ0::MPS, w::MPO, t::Real, N::In
     W = Array{MPO}(undef, L)
     for j in 1:L
         W[j] = insert_local(j - 1, deepcopy(w), Lψ0 - (j - 1) - l, d)
-        substitute_siteinds!(W[j], ψ0)
+        substitute_siteinds!(W[j], ψ0) # FIXME substitution MPS -> MPO siteinds
     end
     println("Constructing the asimptotic out states...")
     ψout = Array{MPS}(undef, L, L)

@@ -76,7 +76,7 @@ function operator_translation(::Type{MPO}, d::Integer, L::Integer)
     W = W * delta(cl, links[L-1])
     vectorlist[L] = W
 
-    return MPO(vectorlist)
+    return adjoint_mpo(MPO(vectorlist))
 end
 
 export operator_translation

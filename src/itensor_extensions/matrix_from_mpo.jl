@@ -35,3 +35,5 @@ function matrix_from_mpo(mpo::MPO)::Matrix
     tens = tens * Cprimed
     return Matrix(tens, indprimed, indmain)
 end
+
+export matrix_from_mpo

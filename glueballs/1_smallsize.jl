@@ -3,14 +3,14 @@ smallsize = (JLD2.load("glueballs/1_smallsize.jld2"))["single_stored_object"]
 # smallsize = Dict()
 
 groups = ["ZZ3", "SU3"]
-lengths = [10, 11]
+lengths = [8, 9]
+d = 3
 
 # Compute disprel
 if true
     for group in groups
     smallsize[group] = Dict()
 
-    d = 3
     # Coupling loop
     λ_list = [1//10, 3//10, 5//10, 7//10, 9//10]
 
@@ -36,6 +36,7 @@ if true
 
     # Dispersion relation
     drel = dispersion_relation(dct["H"], dct["T"], l, nlevels = 30)
+    dct["disprel"]["states"] = drel
     dct["disprel"]["E"] = [energy(el) for el ∈ drel]
     dct["disprel"]["k"] = [momentum(el) for el ∈ drel]
     dct["disprel"]["C"] = [real(wavefunction(el)' * dct["C"] * wavefunction(el)) for el ∈ drel]
@@ -61,9 +62,9 @@ if true
     end # system size loop
     end # coupling loop
     end # group loop
-end
 
-JLD2.save_object("glueballs/1_smallsize.jld2", smallsize)
+    JLD2.save_object("glueballs/1_smallsize.jld2", smallsize)
+end
 
 function color_from_lambda(λ::Real)
     pE = [0.2,0.3,0.7]
@@ -74,7 +75,7 @@ end
 
 # plot disprel
 if true
-    l = 10
+    l = 8
     λ_list = [1//10, 3//10, 5//10, 7//10, 9//10]
     ncols = length(λ_list)
     for group in ["ZZ3", "SU3"]

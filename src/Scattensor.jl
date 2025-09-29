@@ -1,5 +1,9 @@
 module Scattensor
 
+    # Global properties
+    default_cutoff = 10e-10
+    default_maxdim = 100
+
     # Usings 
     using ITensors, ITensorMPS
     using LinearAlgebra
@@ -22,6 +26,7 @@ module Scattensor
     include("deprecated_functions/diagonalization_HU.jl")
 
     # Utils
+    include("utils/cancel_terminal_line.jl")
     include("utils/periodic_modulus.jl")
     include("utils/plot_complex_colormap.jl")
     include("utils/print_with_color.jl")
@@ -30,6 +35,7 @@ module Scattensor
     include("utils/rgb_from_hex.jl")
 
     # Matrix extensions
+    include("matrix_extensions/fidelity_uhlmann.jl")
     include("matrix_extensions/get_length_from_localdim.jl")
     include("matrix_extensions/hilbspace_warning.jl")
     include("matrix_extensions/kron_power.jl")
@@ -41,11 +47,10 @@ module Scattensor
     include("matrix_extensions/summation_local.jl")
 
     # ITensor extensions
+    include("itensor_extensions/adjoint_mpo.jl")
     include("itensor_extensions/apply_reflection.jl")
     include("itensor_extensions/apply_translation.jl")
-    include("itensor_extensions/blind_product_inner.jl")
-    include("itensor_extensions/blind_product_matricial.jl")
-    include("itensor_extensions/blind_product_outer.jl")
+    include("itensor_extensions/custom_dmrg_observer.jl")
     include("itensor_extensions/entanglement_entropy.jl")
     include("itensor_extensions/get_uniform_localdim.jl")
     include("itensor_extensions/insert_local.jl")
@@ -73,6 +78,7 @@ module Scattensor
     include("scattensor_functions/get_statesbelow.jl")
     include("scattensor_functions/local_exp_value.jl")
     include("scattensor_functions/plot_disprel.jl")
+    include("scattensor_functions/pop_firstband.jl")
     include("scattensor_functions/pop_groundstate.jl")
     include("scattensor_functions/wannier_symmetric.jl")
     include("scattensor_functions/tdvp_time_evolution.jl")

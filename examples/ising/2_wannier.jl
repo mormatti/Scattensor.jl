@@ -1,10 +1,23 @@
-# Selecting the groundstate and the first band
-bpsi0 = pop_groundstate!(drel)
-psi0 = convert_to(MPS, wavefunction(bpsi0), d, Li; cutoff = 1e-12)
-E0 = energy(bpsi0)
-firstband = get_firstband(drel)
+using Scattensor
+using Revise
 
-# Computing and Plotting the maximally localized Wannier function
-psiw = wannier_symmetric(firstband, H0, L0, Hi, Li, Ti, Ri, d, E0)
-veceng = local_exp_value(H0, psiw, L0, d, Li, addconst = -E0/Li)
-Plots.plot(log.(abs.(veceng)))
+# We select the groundstate and the first band from the dispersion relation
+band = get_firstband(disprel)
+# band2 = pop_firstband!(disprel)
+# band3 = pop_firstband!(disprel) # Just to check that we have more than 2 bands
+# bands = [band1] # Just to check that we have more than 2 bands
+
+# We define the local hamiltonian in the central site
+Llat = Int((Li - L0)/2) # The number of sites to add on each side of the local hamiltonian
+# Hc = kron_power(id, Llat) ⊗ H0 ⊗ kron_power(id, Llat)
+Hc_mpo = insert_local(Llat, H0_mpo, Llat)
+replace_siteinds!(Hc_mpo, sitesl)
+
+# wvec, info = wannier_symmetric(band, E0, Hc, Pi)
+wmps, info = wannier_symmetric(band, E0, x -> apply(Hc_mpo, x), x -> apply_reflection(x), (x,y) -> inner(x,y))
+truncate!(wmps, cutoff = 1e-13)
+
+# wmps = mps_from_vector(wvec, d) # The wannier in MPS formi
+# replace_siteinds!(wmps, sitesl)
+
+Plots.plot(Dict(i => log10(abs(info["density"][i])) for i in keys(info["density"])))

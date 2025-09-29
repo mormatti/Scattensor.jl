@@ -14,13 +14,15 @@ The keyword arguments `kwargs...` are applied to the `MPS` constructor.
     [3] ((dim=4|id=258|"Link,l=2"), (dim=2|id=911|"Site,n=3"), (dim=2|id=196|"Link,l=3"))
     [4] ((dim=2|id=196|"Link,l=3"), (dim=2|id=619|"Site,n=4"))
 """
-function mps_from_vector(v::Vector, d::Int; kwargs...)::MPS
+function mps_from_vector(v::Vector, d::Int; cutoff = default_cutoff, maxdim = default_maxdim)::MPS
     # We get L from the vector and d, the check of non-empty vector is done in the function
     L = get_length_from_localdim(v, d)
     # We create the matrix product state (MPS) from the vector v
     sites = siteinds(d, L)
     T = reshape(v, (repeat([d], L)...))
-    return MPS(ITensor(T, sites...), sites; kwargs...)
+    mps = MPS(ITensor(T, sites...), sites)
+    truncate!(mps, cutoff = cutoff, maxdim = maxdim)
+    return mps
 end
 
 export mps_from_vector
