@@ -4,6 +4,9 @@ using Revise
 using Plots
 using LinearAlgebra
 using ITensorMPS, ITensors
+using PlotlyJS
+
+plotly()
 
 # Global parameters
 default_cutoff = 1e-10
@@ -35,9 +38,9 @@ end
 if false
     global d = 2
     global L0 = 3
-    global Li = 17
-    global hx = -0.5
-    global hz = 0.5
+    global Li = 10
+    global hx = 4
+    global hz = 0
     global id = SparseMatrixCSC([1 0; 0 1])
     global σx = SparseMatrixCSC([0 1; 1 0])
     global σz = SparseMatrixCSC([1 0; 0 -1])
@@ -66,9 +69,9 @@ if true
 
     # Parameters
     global L0 = 3
-    global Li = 20
+    global Li = 9
     global d = 3 # The local dimension
-    global λ = 0.1
+    global λ = 0.5
 
     # Local operators
     global id = operator_identity(SparseMatrixCSC, 3)
@@ -106,17 +109,44 @@ disprel_mat = dispersion_relation(Hi_mat, Ti_mat, Li, nlevels = 8)
 p1 = Plots.plot(disprel_mat)
 =#
 
-H0_mpo = mpo_from_matrix(Matrix(H0), d)
-Hi_mpo = summation_local(H0_mpo, Li, pbc = true)
-sitesl = siteinds_main(Hi_mpo)
-Ti_mpo = operator_translation(MPO, d, Li)
-replace_siteinds!(Ti_mpo, sitesl)
-println("Test = ", norm(product(Hi_mpo, Ti_mpo) - product(Ti_mpo, Hi_mpo)))
-disprel_mpo = dispersion_relation(Hi_mpo, nlevels = 5)
+# H0 = mpo_from_matrix(Matrix(H0), d)
+Hi = summation_local(H0, d, Li, pbc = true)
+# sitesl = siteinds_main(Hi_mpo)
+Ti = operator_translation(SparseMatrixCSC, d, Li)
+# replace_siteinds!(Ti, sitesl)
+# println("Test = ", norm(product(Hi, Ti) - product(Ti, Hi)))
+disprel = dispersion_relation(Hi, Ti, Li, nlevels = 15)
+p = plot_disprel(disprel, 0, π)
 ωbs = pop_groundstate!(disprel) # The vacuum as Bloch state object
-ωmps = wavefunction(ωbs)
-E0 = energy(ωbs)
-Plots.plot(disprel_mpo)
+band = pop_firstband!(disprel)
+# E0 = energy(ωbs)
+
+#=
+rawk = []
+rawE = []
+for state in disprel
+    if state.koverpi == 0
+        push!(rawk, 0)
+        push!(rawE, energy(state))
+    end
+end
+=#
+
+#=
+indk = []
+indE = []
+for state1 in band
+    push!(indk, 0)
+    push!(indE, 2 * energy(state1) - E0)
+end
+=#
+
+# scatter(rawk, rawE)
+# scatter!(indk, indE)
+
+# ωmps = wavefunction(ωbs)
+# E0 = energy(ωbs)
+# plot(p)
 
 #=
 

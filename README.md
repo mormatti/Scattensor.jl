@@ -10,7 +10,7 @@ This package has the goal to provide functions and algorithms to simulate quasi-
 Let's consider a quantum many-body system with Hilbert space $\mathcal H$ and Hamiltonian $H$. We require that
 
 - **1D** **space** dimension: the space dimension of the system is $D=1$. Next step go higher dimensions $D>1$;
-- **Discretization** of the space: The system is discrete, on lattice, with constant lattice spacing $a=1$. For some systems like Lattice Gauge Theories, the goal is to get near the continuum limit $a \to 0$.
+- **Discretization** of the space: The system is discrete, on lattice, with constant lattice spacing $a=1$ (For some systems like Lattice Gauge Theories, the goal is to get near the continuum limit $a \to 0$)
 - **Uniformity** of local dimension: The system has a uniform local dimension $d$. This also means that for PBC it is always defined a translation operator $\hat T$ of a unit site (on the right); Next step: generalize to the **Periodicity** $n$ of the local dimension (so that the translation operator is still defined). An example could be staggered fermions.
 - **Translation invariance**: $H$ is translational invariant, i.e. $[H, T]=0$; Next steps involve generalizing this translational invariance to $T^n$ or a more generic translation.
 - **Reflection** invariance: there exist a reflection operator (i.e. an operator such that $TR=RT^\dag$) under which the Hamiltonian is invariant (i.e. $[H,R] = 0$)

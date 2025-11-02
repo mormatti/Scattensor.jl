@@ -19,7 +19,7 @@ function wannier_symmetric(
         error("To get a symmetrized Wannier, only positive momenta are needed. Please select them.")
     end
     # We first check that ψ is really a single band, i.e. that two different states has different momentum.
-    if !(length(unique(state.koverpi for state in bandstates)) == length(bandstates))
+    if !isband(bandstates)
         error("ψ must be a single band.")
     end
 
@@ -145,6 +145,10 @@ function wannier_symmetric(
     # We compute the density profile and we save it
     density = Dict(j => sum(real(phases[k1]' * phases[k2] * Hjeff[k1,k2,j]) for k1 in all_ks, k2 in all_ks) / (Ebar * L) for j in 0:Int(floor((L-1)/2)))
     info["density"] = density
+
+    # We compute the density profile and we save it
+    densitylog10 = Dict(j => log10(abs(density[j])) for j in 0:Int(floor((L-1)/2)))
+    info["densitylog10"] = densitylog10
 
     wopt = sum(phases[k] * Ψ[k] for k in all_ks)
     wopt = wopt / norm(wopt)

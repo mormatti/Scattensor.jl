@@ -1,7 +1,10 @@
 # TODO: tidy and document this function
 
-function tdvp_time_evolution!(data::Dict, H::MPO, ψ::MPS, dt::Real, Δt::Real, H0::MPO; cutoff = default_cutoff, maxdim = default_maxdim, kwargs...)
+function tdvp_time_evolution!(data::Dict, H::MPO, ψ::MPS, dt::Real, Δt::Real, H0::MPO; cutoff = default_cutoff, maxdim = default_maxdim, groundstate = :none, kwargs...)
     
+    # Change the backend to Plots.jl
+    gr()
+
     # Getting the local dimension, ensuring uniformity
     sites = siteinds(ψ)
     site_dims = [dim(sites[i]) for i in eachindex(sites)]
@@ -26,8 +29,13 @@ function tdvp_time_evolution!(data::Dict, H::MPO, ψ::MPS, dt::Real, Δt::Real, 
     data[:simulationtime] = 0
     times = [n * dt for n in 1:N]
     data[:times] = times
-    positions = [x for x in 2:(L-1)]
-    data[:positions] = positions
+
+    if groundstate != :none
+        println("Computing ground state for energy reference...")
+        gsenergies = local_expvals(groundstate, H0, hermitian = true)
+    else
+        gsenergies = zeros(L - size(H)[1] + 1)
+    end
 
     println("Starting the simulation...")
     println("Total number of steps to execute: $N")
@@ -47,7 +55,7 @@ function tdvp_time_evolution!(data::Dict, H::MPO, ψ::MPS, dt::Real, Δt::Real, 
             normalize!(ψ)
             push!(data[:states], ψ)
             push!(data[:linkdimens], linkdims(ψ))
-            push!(data[:energies], local_expvals(ψ, H0, data[:d]))
+            push!(data[:energies], local_expvals(ψ, H0, hermitian = true) .- gsenergies)
         end
         push!(data[:timeselapsed], timelapsed)
         push!(data[:estimatedtimes], timelapsed * (N - n))

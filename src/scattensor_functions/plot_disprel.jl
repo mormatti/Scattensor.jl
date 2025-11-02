@@ -1,13 +1,39 @@
 using Plots
 using LaTeXStrings
 
-function Plots.plot(disprelvec::Vector{<:BlochState}; kwargs...)
-    E = [energy(state) for state in disprelvec]
-    k = [momentum(state) for state in disprelvec]
+function plot_disprel(disprelvec::Vector{<:BlochState}, from::Real, to::Real; kwargs...)
 
-    # Data ranges
-    kmin, kmax = extrema(k)
-    Emin, Emax = extrema(E)
+    Elist = []
+    klist = []
+
+    function catch_ks(koverpi, from, to)
+        koverpicopy = koverpi
+        koverpis = []
+        while koverpicopy * π >= from
+            koverpicopy -= 2
+        end
+        while koverpicopy * π <= to
+            if from <= koverpicopy * π <= to
+                push!(koverpis, koverpicopy)
+            end
+            koverpicopy += 2
+        end
+        return koverpis
+    end
+
+    for state in disprelvec
+        for kvp in catch_ks(state.koverpi, from, to)
+            push!(klist, kvp * π)
+            push!(Elist, energy(state))
+        end
+        for kvp in catch_ks(-state.koverpi, from, to)
+            push!(klist, kvp * π)
+            push!(Elist, energy(state))
+        end
+        # TODO for parity invariance please complete here
+    end
+
+    Emin, Emax = extrema(Elist)
 
     # Handle degenerate ranges and add ~10% padding
     function padded_limits(a, b; frac = 0.10)
@@ -19,12 +45,12 @@ function Plots.plot(disprelvec::Vector{<:BlochState}; kwargs...)
             return (a - m, b + m)
         end
     end
-    klims = padded_limits(kmin, kmax)
+    klims = padded_limits(from, to)
     Elims = padded_limits(Emin, Emax)
 
     # Canonical tick candidates and labels
-    tick_pos_all  = [-π, -π/2, 0, π/2, π]
-    tick_lab_all  = [L"-\pi", L"-\pi/2", L"0", L"\pi/2", L"\pi"]
+    tick_pos_all  = [-2π, -(3/2) * π, -π, -π/2, 0, π/2, π, (3/2) * π, 2π]
+    tick_lab_all  = [L"2\pi", L"-3\pi/2", L"-\pi", L"-\pi/2", L"0", L"\pi/2", L"\pi", L"3\pi/2", L"2\pi"]
 
     # Keep only ticks inside the padded limits (with a tiny tolerance)
     tol = 1e-9 * (abs(klims[2] - klims[1]) + 1)
@@ -46,5 +72,7 @@ function Plots.plot(disprelvec::Vector{<:BlochState}; kwargs...)
         framestyle = :box,
     )
 
-    return Plots.scatter(k, E; defaults..., kwargs...)
+    return Plots.scatter(klist, Elist; defaults..., kwargs...)
 end
+
+export plot_disprel

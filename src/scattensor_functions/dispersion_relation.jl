@@ -60,7 +60,7 @@ function dispersion_relation(H::AbstractMatrix, T::AbstractMatrix, L::Integer; n
         error("Type $(typeof(H)) non supported in the dispersion relation algorithm.")
     end
 
-    cancel_terminal_line()
+    print(specialchar_cancel_line())
 
     # We define the energy range and the energy shift
     ΔE = Emax - Emin # Def: the energy range.
@@ -97,7 +97,7 @@ function dispersion_relation(H::AbstractMatrix, T::AbstractMatrix, L::Integer; n
             en, st = eigen(Hermitian(Hk))
             st = collect(eachcol(st))
         elseif typeof(H) <: SparseType
-            en, st, _ = eigsolve(Hk, size(H, 1), nlevels, :SR, ComplexF64; ishermitian = true)
+            en, st, _ = eigsolve(Hk, size(H, 1), nlevels, :SR, ComplexF64; ishermitian = true, krylovdim = max(nlevels * 2, nlevels + 20))
             en = real(en)
         end
         for i in eachindex(en)
@@ -116,7 +116,7 @@ end
 # TODO: Implement the dispersion_relation function with a pure tensor network approach.
 function dispersion_relation(H::MPO; nlevels::Int = 3, kwargs...)
     
-    dmrgargs = (nsweeps = 1000, maxdim = [50,100,200,400,500], cutoff = [1e-8], observer = CustomObserver(1e-8))
+    dmrgargs = (nsweeps = 1000, maxdim = [50,100,200,400,500], cutoff = [1e-10], observer = CustomObserver(1e-8))
 
     # Define parameters and operators
     sites = siteinds_main(H)

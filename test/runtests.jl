@@ -1,9 +1,7 @@
 include("../src/Scattensor.jl")
 using .Scattensor
-using Revise, Test
-using Plots
-using LinearAlgebra, LinearSolve, SparseArrays
-using ITensors, ITensorMPS
+using Revise
+using Test
 
 @testset "Scattensor.jl" begin
     println("Testing Scattensor.jl")

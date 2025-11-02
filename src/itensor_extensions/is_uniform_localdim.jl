@@ -30,10 +30,6 @@ function is_uniform_localdim(mps::MPS)::Bool
     return is_uniform_localdim(siteinds(mps))
 end
 
-function is_uniform_localdim(mpo::MPO)::Bool
-    return is_uniform_localdim(siteinds(mpo))
-end
-
 function is_uniform_localdim(mpo::MPO)
     d1 = get_uniform_localdim(siteinds_main(mpo))
     d2 = get_uniform_localdim(siteinds_primed(mpo))

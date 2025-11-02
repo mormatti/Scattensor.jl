@@ -10,10 +10,6 @@ If the local operator is longer than the `MPS`, it raises an error.
 If the input is a vector of `MPS`, it computes the local expectation values for each `MPS` in the vector and returns a matrix of results.
 """
 function local_expvals(mps::MPS, mpo::MPO; hermitian::Bool = true)
-    # We check that mps and mpo have compatible siteinds
-    if siteinds(mps) != siteinds_main(mpo)
-        error("MPS and MPO must share the same site indices.")
-    end
     # We get the local dimension of the MPS and the MPO and we check that they are uniform
     dmps = get_uniform_localdim(mps)
     dA0 = get_uniform_localdim(mpo)
@@ -21,7 +17,6 @@ function local_expvals(mps::MPS, mpo::MPO; hermitian::Bool = true)
     if dmps != dA0
         error("Different local dimension of MPS (d = $dmps) and MPO (d = $dA0).")
     end
-    d = dmps
     # We check that the local operator is not greater than the MPS
     Lc = length(mps) - length(mpo)
     if Lc < 0
@@ -34,7 +29,7 @@ function local_expvals(mps::MPS, mpo::MPO; hermitian::Bool = true)
     end
     vals = []
     for j in 1:(Lc+1)
-        Aext = insert_local(j - 1, mpo, Lc - j)
+        Aext = insert_local(j - 1, mpo, Lc - j + 1)
         replace_siteinds!(Aext, siteinds(mps))
         val = inner(mps', Aext, mps)
         val = hermitian ? real(val) : val
@@ -54,7 +49,7 @@ function local_expvals(mpsvector::Vector{MPS}, mpo::MPO; hermitian::Bool = true)
         error("All the MPS must have the same length in order to construct a matrix")
     end
     timelapsed = 0
-    matrix = zeros(length(mpsvector), length(mpsvector[1]) - length(mpo))
+    matrix = zeros(length(mpsvector), length(mpsvector[1]) - length(mpo) + 1)
     N = length(mpsvector)
     for n in 1:N
         print("Step $n / $N. Estimated remaining time: $(timelapsed * (N - n)).")

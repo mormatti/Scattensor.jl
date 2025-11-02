@@ -13,7 +13,7 @@ The keyword arguments `kwargs...` are applied to the `MPO` constructor.
     [1] ((dim=2|id=746|"Site,n=1"), (dim=2|id=746|"Site,n=1")', (dim=4|id=76|"Link,l=1"))
     [2] ((dim=4|id=76|"Link,l=1"), (dim=2|id=563|"Site,n=2"), (dim=2|id=563|"Site,n=2")')
 """
-function mpo_from_matrix(matrix::Matrix, d::Int; cutoff = default_cutoff, maxdim = default_maxdim)::MPO
+function mpo_from_matrix(matrix::Matrix, d::Int, cutoff::Real, maxdim::Int)::MPO
     # We get L from the matrix and d.
     # The check of the square matrix size is done in the function
     L = get_length_from_localdim(matrix, d)
