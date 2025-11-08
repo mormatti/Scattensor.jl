@@ -4,8 +4,6 @@ using Revise
 using Plots
 using LinearAlgebra
 using ITensorMPS, ITensors
-using PlotlyJS
-plotly()
 
 d = 3
 L = 9

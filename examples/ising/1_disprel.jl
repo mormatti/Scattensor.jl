@@ -4,9 +4,6 @@ using Revise
 using Plots
 using LinearAlgebra
 using ITensorMPS, ITensors
-using PlotlyJS
-
-plotly()
 
 # Global parameters
 default_cutoff = 1e-10

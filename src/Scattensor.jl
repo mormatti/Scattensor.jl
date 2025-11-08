@@ -10,7 +10,6 @@ module Scattensor
     using SparseArrays
     using Optim
     using Plots
-    using PlotlyJS
     using KrylovKit
     using Colors
     using Logging
