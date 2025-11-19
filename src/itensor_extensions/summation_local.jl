@@ -29,25 +29,28 @@ function summation_local(mpo::MPO, L::Integer; convolution::Function = identity,
         end
         push!(coefficients, el)
     end
+    println()
+    print("step: 1")
     # We compute the final MPO summation
-    finalsum = coefficients[1] * insert_local(1 - 1, mpo, Lc)
+    finalsum = coefficients[1] * insert_local(0, mpo, Lc)
     finalsites = siteinds_main(finalsum)
     for j in 2:(Lc+1)
+        print(", $j ")
         tosum = coefficients[j] * insert_local(j - 1, mpo, Lc - (j - 1))
         replace_siteinds!(tosum, finalsites)
-        finalsum = finalsum + tosum
-        truncate!(finalsum, cutoff = cutoff, maxdim = maxdim)
+        finalsum = add(finalsum, tosum, cutoff = cutoff, maxdim = maxdim)
     end
+    println(".")
     # We finally sum also pbc contribution if needed
     if pbc
+        println("and PBC contributions...")
         translationop = operator_translation(MPO, d, L)
         replace_siteinds!(translationop, finalsites)
         finalterm = coefficients[Lc+1] * insert_local(Lc, mpo, 0)
         replace_siteinds!(finalterm, finalsites)
         for _ in (Lc+2):L
             finalterm = product(adjoint_mpo(translationop), finalterm, translationop)
-            finalsum = finalsum + finalterm
-            truncate!(finalsum, cutoff = cutoff, maxdim = maxdim)
+            finalsum = add(finalsum, finalterm, cutoff = cutoff, maxdim = maxdim)
         end
     end
     return finalsum
