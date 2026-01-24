@@ -45,9 +45,6 @@ module Scattensor
     include("abstract_functions/operator_reflection.jl")
     include("abstract_functions/operator_translation.jl")
 
-    # Deprecated functions
-    include("deprecated_functions/diagonalization_HU.jl")
-
     # Utils
     include("utils/cancel_terminal_line.jl")
     include("utils/periodic_modulus.jl")
