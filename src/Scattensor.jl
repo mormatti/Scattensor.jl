@@ -38,7 +38,6 @@ module Scattensor
     export angle_to_rgb, complex_to_rgb, hex_to_rgb
     export ↻, ZZ
     export CustomObserver
-    export special_foo
 
     # Abstract functions
     include("abstract_functions/kron_power.jl")

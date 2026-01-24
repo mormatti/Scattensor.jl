@@ -27,7 +27,3 @@ function ITensorMPS.checkdone!(observer::CustomObserver; energy, sweep, kwargs..
 
     return stop
 end
-
-function special_foo(x)
-    print(x)
-end
