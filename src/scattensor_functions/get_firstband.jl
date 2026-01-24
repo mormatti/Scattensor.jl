@@ -1,4 +1,23 @@
-# TODO: write a documentation for this function.
+"""
+    get_firstband(states::Vector{<:BlochState}) -> Vector{<:BlochState}
+
+Construct a "first band" by selecting, for each distinct momentum `k`, the lowest-energy state.
+
+This is a convenience routine for post-processing the output of `dispersion_relation`, which often
+returns multiple eigenstates at each momentum.
+
+# Arguments
+- `states`: Vector of Bloch states (typically containing multiple eigenstates per momentum).
+
+# Returns
+- A vector containing exactly one state per momentum: the minimum-energy one.
+  The output is ordered by increasing momentum.
+
+# Notes
+- Momentum grouping is performed by equality comparisons of `momentum(state)`. For robust grouping,
+  prefer storing `koverpi` as a `Rational` in your `BlochState`s (floating-point momentum grids may
+  suffer from equality/roundoff issues).
+"""
 function get_firstband(states::Vector{BlochStateType}) where BlochStateType <: BlochState
     # If the list of states is empty, we return an empty list    
     if isempty(states)

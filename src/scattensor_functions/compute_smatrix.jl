@@ -1,6 +1,40 @@
+"""
+S-matrix utilities (experimental).
+
+The routines in this file implement (or prototype) real-space and momentum-space two-particle
+S-matrix constructions on top of ITensor's `MPS`/`MPO` machinery.
+
+**Status**: under construction. The algorithms and APIs in this file are not yet considered stable,
+and parts of the implementation still rely on provisional helpers (e.g. `substitute_siteinds!`).
+"""
+
 # TODO: all of this code is not yet fully functional, it needs to be tested and debugged.
 # TODO: this code still use substitute_siteinds and blind_product_inner... fix it.
 
+"""
+    smatrix_real_space(d, H, ψ0, w, t, N, χmax) -> Array{ComplexF64,4}
+
+Prototype real-space S-matrix expansion for two-particle scattering (MPO/MPS workflow).
+
+This routine builds two-particle asymptotic in/out states by applying a localized creation operator `w`
+at different positions on top of a vacuum `ψ0`, then computes a truncated time-evolution/series expansion
+to obtain the real-space S-matrix tensor `S[j1, j2, j1′, j2′]`.
+
+# Arguments
+- `d::Integer`: Local dimension.
+- `H::MPO`: Hamiltonian MPO governing time evolution.
+- `ψ0::MPS`: Reference vacuum/ground state.
+- `w::MPO`: Localized creation operator (as an MPO).
+- `t::Real`: Evolution time.
+- `N::Integer`: Expansion order / number of terms (implementation-dependent).
+- `χmax::Integer`: Maximum bond dimension used in `apply`.
+
+# Returns
+- `S::Array{ComplexF64,4}` with indices `(j1, j2, j1′, j2′)` over the allowed particle positions.
+
+# Warnings
+- This function is marked TODO in the source and is not yet fully validated.
+"""
 function smatrix_real_space(d::Integer, H::MPO, ψ0::MPS, w::MPO, t::Real, N::Integer, χmax::Integer)
     # TODO assert that the local dimension of the MPS is the same as the one of the MPO
     # TODO assert that ψ0 is the groundstate of the Hamiltonian H
@@ -69,6 +103,21 @@ end
 
 export smatrix_real_space
 
+"""
+    smatrix_element_momentum_space(S, k1, k2, k1′, k2′) -> Complex
+
+Compute a momentum-space S-matrix element from a real-space tensor `S`.
+
+Given `S[j1, j2, j1′, j2′]`, this function performs the discrete Fourier transform over all four indices
+to obtain the scattering amplitude between incoming momenta `(k1, k2)` and outgoing momenta `(k1′, k2′)`.
+
+# Arguments
+- `S::Array`: Real-space S-matrix tensor with 4 indices.
+- `k1, k2, k1′, k2′::Real`: Momenta (radians) used in the phase factors.
+
+# Returns
+- A complex amplitude.
+"""
 function smatrix_element_momentum_space(S::Array, k1::Real, k2::Real, k1′::Real, k2′::Real)
     result = 0
     L1 = size(S, 1)
@@ -91,8 +140,27 @@ function smatrix_element_momentum_space(S::Array, k1::Real, k2::Real, k1′::Rea
     return result
 end
 
+"""
+    smatrix_momentum_space(S, k1, k2, k1′, k2′) -> Complex
+
+Alias for [`smatrix_element_momentum_space`](@ref).
+"""
+smatrix_momentum_space(S::Array, k1::Real, k2::Real, k1′::Real, k2′::Real) =
+    smatrix_element_momentum_space(S, k1, k2, k1′, k2′)
+
 export smatrix_momentum_space
 
+"""
+    smatrix_real_space_tdvp(d, H, ψ0, w, t, χmax) -> Array{ComplexF64,4}
+
+Prototype real-space S-matrix computation using TDVP time evolution.
+
+This routine builds two-particle states by applying `w` at different positions and uses TDVP to evolve
+them for a time `t`, then overlaps with the corresponding out-states to form the S-matrix tensor.
+
+# Warnings
+- This function is experimental and under construction.
+"""
 function smatrix_real_space_tdvp(
     d::dType, # The local dimension of the system
     H::MPO, # The Hamiltonian of the system
@@ -170,6 +238,16 @@ end
 
 export smatrix_real_space_tdvp
 
+"""
+    smatrix_expansion_real_space_tdvp(d, H, ψ0, w, χmax, t) -> Array{ComplexF64,4}
+
+Prototype helper that computes the TDVP overlap tensor `A[j1, j2, j1′, j2′]` for two-particle states.
+
+This is currently used as an intermediate object for momentum-space element evaluation.
+
+# Warnings
+- Experimental / under construction.
+"""
 function smatrix_expansion_real_space_tdvp(
     d::dType, # The local dimension of the system
     H::MPO, # The Hamiltonian of the system
@@ -249,6 +327,22 @@ function smatrix_expansion_real_space_tdvp(
 end
 
 # Given A with 4 j indices and 1 n index, we can compute an S-matrix element in the momentum space
+"""
+    smatrix_element_momentum_space_tdvp(A, k1, k2, k1′, k2′) -> Complex
+
+Compute a momentum-space scattering amplitude from a TDVP overlap tensor `A`.
+
+# Arguments
+- `A`: A 4-index overlap tensor (typically output of `smatrix_expansion_real_space_tdvp`).
+- `k1, k2, k1′, k2′`: Momenta (radians).
+
+# Returns
+- A complex amplitude.
+
+# Notes
+- This uses an unnormalized direct summation; depending on conventions you may need to apply
+  normalization factors externally.
+"""
 function smatrix_element_momentum_space_tdvp(A, k1, k2, k1′, k2′)
     result = 0
     L = size(A, 1)
@@ -266,6 +360,29 @@ end
 
 export smatrix_element_momentum_space_tdvp
 
+"""
+    two_particle_wavefunction(ψ, ψ0, W, d; maxdim=100) -> Matrix{ComplexF64}
+
+Compute a two-particle real-space wavefunction matrix from an MPS.
+
+For each pair of insertion positions `(j, j′)`, this routine applies the creation operator `W` to the
+vacuum `ψ0` at `j` and `j′` and computes the overlap with `ψ`.
+
+# Arguments
+- `ψ::MPS`: Target state (typically a two-particle state).
+- `ψ0::MPS`: Vacuum/reference state.
+- `W::MPO`: Creation operator MPO with support `length(W)`.
+- `d::Int`: Local dimension.
+
+# Keyword Arguments
+- `maxdim::Int=100`: Maximum bond dimension used during `apply`.
+
+# Returns
+- A complex matrix `M[j, j′]` of overlaps.
+
+# Warnings
+- This routine is computationally expensive (`O(L^2)`) state preparations/overlaps.
+"""
 function two_particle_wavefunction(ψ::MPS, ψ0::MPS, W::MPO, d::Int; maxdim::Int = 100)
     normalize!(ψ)
     normalize!(ψ0)

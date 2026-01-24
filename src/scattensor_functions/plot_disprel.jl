@@ -1,6 +1,29 @@
 using Plots
 using LaTeXStrings
 
+"""
+    plot_disprel(disprelvec::Vector{<:BlochState}, from::Real, to::Real; kwargs...) -> Plots.Plot
+
+Plot a dispersion relation `E(k)` from a collection of Bloch states.
+
+The function extracts the momentum/energy pairs from `disprelvec` and plots them over the
+requested momentum interval `[from, to]` (in radians), using π-based tick labels when possible.
+
+# Arguments
+- `disprelvec`: Vector of `BlochState` objects (e.g. output of `dispersion_relation`).
+- `from`: Lower bound of the plotted momentum interval (radians).
+- `to`: Upper bound of the plotted momentum interval (radians).
+
+# Keyword Arguments
+- `kwargs...`: Forwarded to `Plots.scatter`.
+
+# Returns
+- A `Plots.Plot` object.
+
+# Notes
+- The plotting logic currently duplicates points using `±k` to reflect evenness when appropriate.
+  This is a visualization choice and does not enforce symmetry of the underlying data.
+"""
 function plot_disprel(disprelvec::Vector{<:BlochState}, from::Real, to::Real; kwargs...)
 
     Elist = []

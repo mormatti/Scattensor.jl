@@ -1,4 +1,34 @@
-# TODO: write a documentation for this function.
+"""
+    dispersion_relation(H::AbstractMatrix, T::AbstractMatrix, L::Integer; nlevels::Integer=2, kwargs...) -> Vector{BlochState}
+
+Compute a dispersion relation by projecting a translation-invariant Hamiltonian onto momentum sectors.
+
+Given a Hamiltonian `H` and a (unitary) translation operator `T` satisfying `[H, T] = 0`, this
+function constructs projectors onto momentum eigenspaces and diagonalizes the projected Hamiltonian
+for each allowed momentum `k = 2π m/L`.
+
+# Arguments
+- `H`: Hamiltonian matrix (dense or sparse), assumed Hermitian.
+- `T`: Translation operator matrix, assumed unitary and of the same size as `H`.
+- `L`: Number of lattice sites (sets the allowed momenta).
+
+# Keyword Arguments
+- `nlevels::Integer=2`: Number of lowest-energy eigenstates to keep per momentum sector.
+- `kwargs...`: Reserved for future options (currently unused).
+
+# Returns
+- A vector of [`BlochState`](@ref) objects. Each element stores:
+  - the eigenvector (as `data`),
+  - the corresponding energy,
+  - `koverpi = k/π` as a `Rational`.
+
+# Side effects
+- Prints diagnostic checks for Hermiticity/unitarity/translation invariance and progress messages.
+
+# Notes
+- Only nonnegative reduced-zone momenta are currently included (`koverpi ≥ 0`), so you may want to
+  reconstruct `-k` points by symmetry when plotting/processing.
+"""
 function dispersion_relation(H::AbstractMatrix, T::AbstractMatrix, L::Integer; nlevels::Integer = 2, kwargs...)
     DenseType = Matrix
     SparseType = SparseMatrixCSC
@@ -113,7 +143,28 @@ function dispersion_relation(H::AbstractMatrix, T::AbstractMatrix, L::Integer; n
     return disprelvec
 end
 
-# TODO: Implement the dispersion_relation function with a pure tensor network approach.
+"""
+    dispersion_relation(H::MPO; nlevels::Int=3, kwargs...) -> Vector{BlochState}
+
+Experimental tensor-network version of [`dispersion_relation`](@ref) operating on an `MPO`.
+
+This method attempts to obtain momentum-resolved low-energy states using a penalty construction and
+repeated DMRG runs. It is currently **under construction** and may be slow or unreliable depending
+on model and parameters.
+
+# Arguments
+- `H::MPO`: Hamiltonian as an MPO with uniform local dimension.
+
+# Keyword Arguments
+- `nlevels::Int=3`: Number of low-energy states to target per momentum.
+- `kwargs...`: Reserved for future options.
+
+# Returns
+- A vector of [`BlochState`](@ref) objects whose `data` field is an `MPS`.
+
+# Warnings
+- This routine is marked as TODO in the source: it is not yet a pure/robust TN projection method.
+"""
 function dispersion_relation(H::MPO; nlevels::Int = 3, kwargs...)
     
     dmrgargs = (nsweeps = 1000, maxdim = [50,100,200,400,500], cutoff = [1e-10], observer = CustomObserver(1e-8))

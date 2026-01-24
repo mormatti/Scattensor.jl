@@ -1,4 +1,19 @@
-# TODO: write a documentation for this function.
+"""
+    pop_firstband!(states::Vector{<:BlochState}) -> Vector{<:BlochState}
+
+Construct a "first band" (lowest-energy state per momentum) and remove those states from `states`.
+
+# Arguments
+- `states`: Vector of Bloch states. It is modified in-place: the selected states are removed.
+
+# Returns
+- A vector containing one state per distinct momentum, namely the one with minimal energy at that momentum.
+  The output is ordered by increasing momentum.
+
+# Notes
+- Momentum grouping is performed using `momentum(state)` and equality comparisons; using exact momenta
+  (e.g. `koverpi::Rational`) is recommended.
+"""
 function pop_firstband!(states::Vector{BlochStateType}) where BlochStateType <: BlochState
     # If the list of states is empty, we return an empty list
     if isempty(states)

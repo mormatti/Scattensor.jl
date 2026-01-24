@@ -1,11 +1,22 @@
 """
-    periodic_even_interpolant(K, E) -> f
+    _periodic_even_interpolant(K, E; derivative=0) -> f
 
-Build an even, 2π-periodic trigonometric interpolant from half-BZ samples.
-- K: momenta in [0, π], uniform multiples of 2π/L with K[1]≈0 (π may or may not be included)
-- E: energies at those K
+Build an even, `2π`-periodic trigonometric interpolant from samples on `[0, π]`.
 
-Returns a callable f(k) that interpolates the data and satisfies f(k)=f(-k).
+This is an internal helper used by [`dispersion_interpolant`](@ref). It fits a cosine series
+to the provided samples and returns a callable `f(k)` (or an array-valued map) that satisfies
+`f(k) == f(-k)` by construction.
+
+# Arguments
+- `K`: Sample momenta in `[0, π]`, assumed to be uniformly spaced and starting at 0.
+- `E`: Sample values (energies) at those momenta.
+
+# Keyword Arguments
+- `derivative::Integer=0`: Order of derivative to return (0 gives the interpolant itself).
+
+# Returns
+- A callable object `f` such that `f(k)` interpolates the samples (in a least-squares/linear-solve sense
+  for the cosine basis) and is even and `2π`-periodic.
 """
 function _periodic_even_interpolant(K, E; derivative = 0)
     @assert length(K) == length(E) && length(K) ≥ 2
@@ -49,6 +60,23 @@ function _periodic_even_interpolant(K, E; derivative = 0)
 end
 
 
+"""
+    dispersion_interpolant(states; derivative=0) -> f
+
+Construct an even, `2π`-periodic interpolant `E(k)` from a set of Bloch states.
+
+This helper is commonly used to obtain a smooth dispersion relation from discrete samples
+(typically a single band).
+
+# Arguments
+- `states`: Iterable of `BlochState` objects providing `koverpi` and `energy`.
+
+# Keyword Arguments
+- `derivative::Integer=0`: Order of derivative to return (0 gives `E(k)`).
+
+# Returns
+- A function `f(k)` that evaluates the interpolated dispersion at momentum `k` (in radians).
+"""
 function dispersion_interpolant(states; derivative = 0)
     @assert !isempty(states) "No states provided"
 

@@ -1,3 +1,33 @@
+"""
+    wannier_symmetric(bandstates, gsenergy, localhamop, parityop, innerprod) -> (w, info)
+
+Compute a maximally localized *symmetric* Wannier-like state from a single Bloch band.
+
+This function performs a phase-optimization over Bloch states in a band in order to construct
+a localized wavepacket (Wannier function) compatible with reflection symmetry. The procedure
+assumes you provide:
+- a set of band eigenstates labeled by momenta,
+- an inner product on the chosen state representation,
+- a parity/reflection operator,
+- and a way to apply a local Hamiltonian operator centered at the reflection center.
+
+# Arguments
+- `bandstates::Vector{<:BlochState}`: Bloch states forming a *single band* (one state per momentum).
+  The function expects momenta stored as `koverpi::Rational` and (currently) requires nonnegative momenta.
+- `gsenergy::Real`: Ground-state energy used as an energy reference/shift.
+- `localhamop::Function`: Function applying the centered local Hamiltonian to a state representation.
+  Signature should be compatible with `localhamop(ψ)`.
+- `parityop::Function`: Reflection/parity operator acting on state representations, `parityop(ψ)`.
+- `innerprod::Function`: Inner product on the state representation, `innerprod(ψ1, ψ2)`.
+
+# Returns
+- `w`: The optimized Wannier-like state (same representation type as `wavefunction` of the input states).
+- `info::Dict{String,Any}`: Diagnostic information (centroid, phases, density profile, etc.).
+
+# Notes
+- This routine currently enforces that `state.koverpi isa Rational` to avoid floating-point momentum issues.
+- Only nonnegative momenta are accepted; `-k` components are reconstructed using the inferred parity.
+"""
 function wannier_symmetric(
     bandstates::Vector{<:BlochState}, # The states of the band,
     gsenergy::Real, # The groundstate energy of the system

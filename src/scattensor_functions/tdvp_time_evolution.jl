@@ -1,4 +1,36 @@
-# TODO: tidy and document this function
+"""
+    tdvp_time_evolution!(data, H, ψ, dt, Δt, H0; cutoff=default_cutoff, maxdim=default_maxdim, groundstate=:none, kwargs...) -> nothing
+
+Time-evolve an MPS with TDVP and record diagnostics into `data`.
+
+At each step, this routine applies `ITensorMPS.tdvp` to evolve the state by `-im*dt`, normalizes the
+result, stores intermediate states and diagnostics, and writes a small set of `.png` plots to disk
+(times, estimated remaining times, memory size, link dimensions, and local energies).
+
+# Arguments
+- `data::Dict`: Output dictionary mutated in-place to store results and metadata.
+- `H::MPO`: Time-evolution Hamiltonian MPO (must have same length as `ψ`).
+- `ψ::MPS`: Initial state (modified by evolution, but the evolved states are stored in `data[:states]`).
+- `dt::Real`: Time step.
+- `Δt::Real`: Total evolution time (number of steps is `round(Int, Δt/dt)`).
+- `H0::MPO`: Local Hamiltonian used to compute local energy densities via `local_expvals`.
+
+# Keyword Arguments
+- `cutoff=default_cutoff`: TDVP truncation cutoff.
+- `maxdim=default_maxdim`: Maximum bond dimension during TDVP.
+- `groundstate=:none`: If not `:none`, interpreted as an MPS used to compute a reference local energy density
+  (subtracted from the energies measured during evolution).
+- `kwargs...`: Forwarded to `tdvp`.
+
+# Returns
+- `nothing`. Results are stored in `data`.
+
+# Side effects
+- Writes several PNG files in the current working directory.
+
+# Notes
+- This function is marked TODO in the source (“tidy and document”) and should be considered experimental.
+"""
 
 function tdvp_time_evolution!(data::Dict, H::MPO, ψ::MPS, dt::Real, Δt::Real, H0::MPO; cutoff = default_cutoff, maxdim = default_maxdim, groundstate = :none, kwargs...)
     

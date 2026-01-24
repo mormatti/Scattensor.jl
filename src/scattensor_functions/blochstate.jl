@@ -1,11 +1,20 @@
 """
-    mutable struct BlochState{T}
+    BlochState{T}
 
-A structure representing a Bloch state in a quantum system.
-The field `data::T` gives the representation of the Bloch state, in whatever format (e.g. `T` can be a `Vector` or `MPS`).
-The `energy::Real` is the eigenvalue associated with the Bloch state, while `koverpi::Rational` is the crystal momentum in units of π.
-The `koverpi` is computed so that it falls within the range [-1, 1).
-Expressing the momentum as units of π is useful for periodic systems, where the momentum is typically defined as a Rational type.
+Container for a (single-particle) Bloch eigenstate.
+
+`BlochState` stores a representation of the state (e.g. a coefficient vector or an `MPS`)
+along with its energy and crystal momentum.
+
+# Fields
+- `data::T`: State representation (for example `Vector{ComplexF64}` or `ITensorMPS.MPS`).
+- `energy::Real`: Energy eigenvalue associated with the state.
+- `koverpi::Real`: Crystal momentum in units of π, i.e. `k/π`. In many workflows this is
+  chosen in the reduced zone `[-1, 1)`, but this is a *convention* and is not enforced.
+
+# Notes
+- If you want exact momentum comparisons (e.g. grouping states by momentum), prefer storing
+  `koverpi` as a `Rational` (which is a subtype of `Real`) rather than a floating-point number.
 """
 mutable struct BlochState{T}
     data::T # The state of the Bloch state, in whatever representation.
@@ -18,7 +27,7 @@ export BlochState
 """
     wavefunction(bs::BlochState) -> Any
 
-Returns the data representation of the Bloch state, such as its wavefunction or coefficients.
+Return the underlying representation stored in `bs.data` (e.g. a coefficient vector or an `MPS`).
 """
 wavefunction(bs::BlochState) = bs.data
 
@@ -27,7 +36,7 @@ export wavefunction
 """
     energy(bs::BlochState) -> Real
 
-Returns the corresponding energy of the Bloch state.
+Return the energy eigenvalue stored in `bs.energy`.
 """
 energy(bs::BlochState)::Real = bs.energy
 
@@ -36,7 +45,10 @@ export energy
 """
     momentum(bs::BlochState) -> Real
 
-Returns the corresponding momentum `k` ∈ [-π,π) of the Bloch state.
+Return the momentum `k` in radians, computed as `π * bs.koverpi`.
+
+Note: no wrapping to a Brillouin zone is performed; the returned value follows whatever
+convention was used to set `koverpi`.
 """
 momentum(bs::BlochState)::Real = π * bs.koverpi
 
