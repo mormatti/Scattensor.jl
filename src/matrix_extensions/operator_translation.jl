@@ -4,6 +4,8 @@
 Returns the translation operator of the specified type `AbstractMatrixType` for a Hilbert space of dimension `d^L`, where `d` is an `Integer` representing the local dimension of each subsystem and `L` is an `Integer` representing the number of subsystems.
 The translation operator is computed in the canonical basis, i.e. in the tensor product basis of the subsystems in the choosen order.
 
+The convention used here is a cyclic right shift by one site (periodic boundary conditions).
+
 # Examples
     julia> operator_translation(Matrix, 2, 2)
     4×4 Matrix{Int64}:

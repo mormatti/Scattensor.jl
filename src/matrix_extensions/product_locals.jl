@@ -11,7 +11,7 @@ Each position is normalized modulo `L`, so that the operator can be applied cycl
 
     julia> b = [0 1; 1 0]
 
-    julia> product_locals(3,(a,1),(b,3))
+    julia> product_locals(3, (a, 1), (b, 3))
     8×8 SparseMatrixCSC{Int64, Int64} with 16 stored entries:
     ⋅  1  ⋅  ⋅  ⋅  2  ⋅  ⋅
     1  ⋅  ⋅  ⋅  2  ⋅  ⋅  ⋅

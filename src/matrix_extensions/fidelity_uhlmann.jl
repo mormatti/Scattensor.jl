@@ -1,4 +1,32 @@
-# Check and write documentation for this
+"""
+    fidelity_uhlmann(rho, sigma; root=false, tol=1e-12) -> Real
+
+Compute the Uhlmann fidelity between two density matrices.
+
+Given two (approximately) Hermitian, positive semidefinite matrices `rho` and `sigma`, the Uhlmann
+fidelity is defined as:
+
+`F(rho, sigma) = (tr(sqrt(sqrt(rho) * sigma * sqrt(rho))))^2`.
+
+This implementation symmetrizes the inputs to remove small anti-Hermitian numerical noise and uses
+eigendecompositions to compute matrix square roots.
+
+# Arguments
+- `rho::AbstractMatrix`: Density matrix ρ.
+- `sigma::AbstractMatrix`: Density matrix σ.
+
+# Keyword Arguments
+- `root::Bool=false`: If `true`, return `tr(sqrt(sqrt(ρ) * σ * sqrt(ρ)))` (the *root fidelity*).
+  If `false`, return the squared fidelity `F(ρ,σ)`.
+- `tol::Real=1e-12`: Eigenvalues below `tol` are clamped to zero to improve numerical stability.
+
+# Returns
+- A real number in `[0, 1]` in the ideal PSD case (small numerical deviations may occur if inputs
+  are not valid density matrices).
+
+# Notes
+- The function assumes `rho` and `sigma` are square and of the same size.
+"""
 
 function fidelity_uhlmann(rho::AbstractMatrix, sigma::AbstractMatrix; root::Bool=false, tol::Real=1e-12)
     @assert size(rho) == size(sigma) "rho and sigma must have the same size"

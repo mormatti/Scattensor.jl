@@ -2,8 +2,9 @@
     kron_power(A::AbstractMatrix, n::Integer) -> AbstractMatrix
 
 `kron_power` implementation for a generic AbstractMatrix type.
-Returns a matrix of the same type of `A`.
-If `n` is zero, it returns the identity matrix 1x1 of size (1) of the same type of `A`.
+Returns a Kronecker power `A ⊗ A ⊗ ... ⊗ A` (n times) for matrix-based workflows.
+
+If `n == 0`, returns a `1×1` identity matrix (via `operator_identity`).
 
 # Examples
     julia> kron_power([1 2; 3 4], 2)

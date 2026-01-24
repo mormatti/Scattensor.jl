@@ -7,6 +7,11 @@ Starting from `A0`, constructs the operator `A1 + A2 + A3 + ... + AL` where
 and `A0` is placed in the `j`-th position. In other words, it computes the summation ΣⱼAj.
 If `pbc` is `true`, the chain is considered periodic, otherwise it is open.
 
+# Notes
+- This is a full-matrix construction intended for small systems; it scales as `d^L`.
+- For `pbc=false` it sums over the `L-L0+1` placements that fit in an open chain, where `L0`
+  is the support length inferred from `A0`.
+
 # Example
     julia> sx = [0 1; 1 0]
 

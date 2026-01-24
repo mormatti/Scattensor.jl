@@ -1,12 +1,21 @@
 """
-    get_length_from_localdim(N, d) -> Integer
-    get_length_from_localdim(vector, d) -> Integer
-    get_length_from_localdim(matrix, d) -> Integer
+    get_length_from_localdim(N::Integer, d::Integer) -> Integer
+    get_length_from_localdim(v::AbstractVector, d::Integer) -> Integer
+    get_length_from_localdim(A::AbstractMatrix, d::Integer) -> Integer
 
-Gets the length L from a system by the local dimension `d` and another property of the system,
-such as the Hilbert space size, a state vector or a matrix operator.
-This is useful when an input is given in terms of the local dimension and the Hilbert space size,
-or when the local dimension is known and the length of the system needs to be determined.
+Infer the chain length `L` from a total Hilbert space size and a local dimension `d`.
+
+This helper solves `N = d^L` for `L` and validates that the result is (approximately) an integer.
+It is useful when you know `d` and you are given a full vector/operator acting on the full Hilbert space.
+
+# Arguments
+- `N`: Total Hilbert space dimension.
+- `v`: State vector of length `N`.
+- `A`: Square operator matrix of size `N × N`.
+- `d`: Local dimension per site.
+
+# Returns
+- `L::Integer` such that `d^L == N`.
 
 # Examples
     julia> get_length_from_localdim(16, 2)

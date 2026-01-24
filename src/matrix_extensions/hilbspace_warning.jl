@@ -1,3 +1,18 @@
+"""
+    _hilbspace_dimension_warning(::Type{<:AbstractMatrix}, N)
+    _hilbspace_dimension_warning(::Type{<:AbstractMatrix}, d, L)
+
+Internal helper used by the matrix-based constructors to warn (or error) about unreasonable Hilbert
+space sizes.
+
+These methods are intentionally conservative: dense matrices become impractical already for moderate
+dimensions, while sparse matrices can handle larger sizes but still scale poorly for many algorithms.
+
+# Notes
+- This is an internal function (prefixed with `_`) and is not part of the public API.
+- Some methods `@warn` for large sizes; others `error` for invalid parameters (negative `d`/`L`).
+"""
+
 function _hilbspace_dimension_warning(::Type{<:Matrix}, N::Real)
     if N < 0
         @warn "Invalid Hilbert space dimension, it cannot be negative. Received: N = $N"
