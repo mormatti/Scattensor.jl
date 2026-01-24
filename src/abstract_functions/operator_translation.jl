@@ -1,8 +1,9 @@
 """
-        operator_translation(args...)
+    operator_translation(args...)
 
-    Return the translation operator from specified arguments.
-    A translation operator T shifts cyclically on the right (e.g. ABCDE -> EABCD) the system.
-    It must have a concrete implementation in a specific type.
-    """
+Abstract interface for constructing a translation operator.
+
+The translation operator `T` performs a cyclic shift by one site (typically to the right, e.g.
+`ABCDE -> EABCD`). Concrete implementations are provided by backends (e.g. matrices or MPOs).
+"""
 function operator_translation end

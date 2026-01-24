@@ -1,8 +1,21 @@
 """
-    kron_power(A, n)
+    kron_power(A, n::Integer)
 
-Compute the n-th Kronecker power `A ⊗ A ⊗ A ⊗ ... ⊗ A` (`n` times) of an object `A` which supports a Kronecker product operation `kron`.
-Types which does not implement `kron` directly must be dispatched to a specific implementation.
+Compute the Kronecker power `A ⊗ A ⊗ ... ⊗ A` (n times).
+
+This is the generic fallback that repeatedly applies `kron`. Concrete backends should provide
+specialized methods when needed (e.g. to support `n == 0`, to handle identity objects, or to avoid
+materializing large intermediates).
+
+# Arguments
+- `A`: Any object for which `kron(A, A)` is defined.
+- `n::Integer`: Number of Kronecker factors.
+
+# Returns
+- The Kronecker power of `A` with itself `n` times.
+
+# Notes
+- The default method errors for `n <= 0`. Matrix and tensor backends may override this behavior.
 """
 function kron_power(A, n::Integer)
     if n <= 0

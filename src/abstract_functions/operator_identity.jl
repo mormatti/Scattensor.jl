@@ -1,7 +1,11 @@
 """
-        operator_identity(args...)
+    operator_identity(args...)
 
-    Return the identity operator from specified arguments.
-    An identity operator must have a concrete implementation in a specific type.
-    """
+Abstract interface for constructing an identity operator.
+
+Concrete implementations are provided by backends (e.g. dense/sparse matrices, MPOs). Typical method
+signatures in this package include:
+- `operator_identity(MatrixType, n::Integer)` for matrix identities
+- `operator_identity(MPO, d::Integer, L::Integer)` for an identity MPO on a length-`L` chain
+"""
 function operator_identity end

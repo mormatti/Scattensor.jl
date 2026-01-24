@@ -1,8 +1,9 @@
 """
-        operator_reflection(args...)
+    operator_reflection(args...)
 
-    Return the reflection operator from specified arguments.
-    A reflection operator R swaps the sites of the system (e.g. ABCDE -> EDCBA).
-    It must have a concrete implementation in a specific type.
-    """
+Abstract interface for constructing a reflection (parity) operator.
+
+The reflection operator `R` reverses the order of sites (e.g. `ABCDE -> EDCBA`). Concrete
+implementations are provided by backends (e.g. matrices or MPOs).
+"""
 function operator_reflection end
