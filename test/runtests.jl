@@ -1,11 +1,8 @@
-include("../src/Scattensor.jl")
-using .Scattensor
-using Revise
 using Test
 
-@testset "Scattensor.jl" begin
-    println("Testing Scattensor.jl")
-    println("Precompilation passed.")
+# In package tests, the package is available on LOAD_PATH.
+using Scattensor
 
-    # Write here the tests.
+@testset "Scattensor.jl" begin
+    include("test_matrix_backend.jl")
 end

@@ -32,7 +32,7 @@ module Scattensor
     export tdvp_time_evolution!
     export smatrix_real_space, smatrix_momentum_space, smatrix_real_space_tdvp, smatrix_element_momentum_space_tdvp
     export entanglement_entropy, partial_trace, local_expvals, insert_local
-    export get_length_from_localdim, mathematica_format
+    export get_length_from_localdim, mathematica_format, product_locals, fidelity_uhlmann
     export plot_complex_colormap
     export print_with_color
     export angle_to_rgb, complex_to_rgb, hex_to_rgb
