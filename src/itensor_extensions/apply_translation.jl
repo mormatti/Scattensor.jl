@@ -1,10 +1,17 @@
 """
-    apply_translation(mps; moveright = true, kwargs...)
+    apply_translation(mps::MPS; moveright=true, kwargs...) -> MPS
 
 Apply the translation of a finite MPS with uniform local dimension.
 The translation is performed swapping couple of physical indices consecutively.
 The keyword arguments are applied to the `swapbondsites` function of ITensor, so one
 can pass cutoff for instance.
+
+# Keyword Arguments
+- `moveright::Bool=true`: If `true`, perform a cyclic right translation; if `false`, left translation.
+- `kwargs...`: Forwarded to `ITensorMPS.swapbondsites`.
+
+# Returns
+- A translated copy of the input MPS.
 
 # Example
     julia> sites = siteinds(3,4)

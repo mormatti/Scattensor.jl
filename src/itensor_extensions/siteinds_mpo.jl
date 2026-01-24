@@ -1,9 +1,11 @@
 """
-    siteinds_main(mpo) -> Vector{Vector{Index}}
-    siteinds_primed(mpo) -> Vector{Vector{Index}}
+    siteinds_main(mpo::MPO) -> Vector{Index}
+    siteinds_primed(mpo::MPO) -> Vector{Index}
 
-Returns the non-primed and primed indices of an `MPO` as vectors of vectors of `Index`.
-This allows for easy access to the site indices of the MPO.
+Return the ket (prime level 0) and bra (prime level 1) site indices of an `MPO`.
+
+These helpers are useful for constructing compatible `MPS`/`MPO` objects and for performing
+site-index substitutions.
 
 # Example
     julia> mpo = random_mpo(siteinds(3, 5))

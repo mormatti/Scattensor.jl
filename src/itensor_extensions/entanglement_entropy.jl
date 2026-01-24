@@ -1,10 +1,11 @@
 """
     entanglement_entropy(mps) -> Float64
-    entanglement_entropy(mps, j) -> Vector{Float64}
+    entanglement_entropy(mps, j) -> Float64
 
-Computes the von Neumann entanglement entropy of bipartition in a integer position 
-j for a ITensor MPS. If `j` is not specified, it computes the entanglement entropy for all sites,
-returning a vector of entanglement entropies for each site.
+Compute the von Neumann entanglement entropy across a bipartition of an MPS.
+
+If `j` is provided, computes the entropy of the cut between sites `j` and `j+1`.
+If `j` is not provided, computes the entropy for all cuts and returns a vector of length `L-1`.
 
 # Example
     julia> sites = siteinds(3,10)

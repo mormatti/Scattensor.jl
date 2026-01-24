@@ -4,6 +4,10 @@
 Generate the translation operator in MPO representation, for a system of `L` sites with local dimension `d`.
 The result bond dimension is `d^2` since the swapping operator is two-site.
 
+# Notes
+- The returned MPO is constructed with standard site indices from `siteinds(d, L)`. If you need it to act on
+  a specific MPS/MPO, use `replace_siteinds!` to match site indices.
+
 # Example
     julia> operator_translation(MPO, 2, 3)
     MPO

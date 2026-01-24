@@ -1,8 +1,15 @@
 """
     insert_local(L1, mpo, L2) -> MPO
 
-Inserts a local MPO at positions L1 and L2 in a larger MPO, returning the resulting MPO.
-The local MPO is inserted in the form of a direct product with identity operators at the other positions.
+Embed a local MPO into a larger chain by padding with identity MPOs.
+
+This is a convenience wrapper around `kron` that returns:
+- `mpo` if `L1 == 0` and `L2 == 0`
+- `kron(mpo, I(L2))` if `L1 == 0`
+- `kron(I(L1), mpo)` if `L2 == 0`
+- `kron(I(L1), kron(mpo, I(L2)))` otherwise
+
+where `I(L)` is the identity MPO of length `L` with the same local dimension as `mpo`.
 
 # Example
     julia> sites = siteinds(3,4)

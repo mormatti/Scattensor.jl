@@ -4,9 +4,18 @@
     substitute_siteinds!(mps, mpo; checklength = true) -> MPS
     substitute_siteinds!(mpo, mps; checklength = true) -> MPO
 
-Substitutes the site indices of one MPO or MPS with those of another.
-This function is useful when you want to ensure that two MPOs or MPSs have compatible site indices, 
-especially when performing operations like contraction or applying operators.
+Mutate an `MPS`/`MPO` by replacing its site indices with those of another object.
+
+This is useful to make multiple objects index-compatible before contractions and applications.
+The functions return the mutated object for convenience.
+
+# Keyword Arguments
+- `checklength::Bool=true`: If `true`, require that the two objects have the same length.
+
+# Notes
+- For MPOs, `ITensorMPS.replace_siteinds!` is also provided below and is usually the preferred API.
+- When substituting an `MPS` from an `MPO`, you can select which physical index of the MPO to use
+  via the `which` keyword (`:ket` or `:bra`).
 
 # Examples
     julia> mps1 = random_mps(siteinds(3, 5))

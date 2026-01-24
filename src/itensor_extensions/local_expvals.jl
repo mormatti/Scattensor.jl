@@ -1,13 +1,21 @@
 """
     local_expvals(mps, matrix; hermitian = true)
     local_expvals(mps, mpo; hermitian = true) -> Vector
-    local_expvals(mpsvector, mpo; hermitian = true) -> Matrx
+    local_expvals(mpsvector, mpo; hermitian = true) -> Matrix
 
 Calculates the local expectation values of an `MPS` with respect to a p-local operator given by an `MPO`.
 If the local operator is the same length as the `MPS`, it returns the inner product of the `MPS` with the product of the `MPO` and the `MPS`.
 If the local operator is shorter than the `MPS`, it computes the local expectation values for each position in the `MPS` where the operator can be applied.
 If the local operator is longer than the `MPS`, it raises an error.
 If the input is a vector of `MPS`, it computes the local expectation values for each `MPS` in the vector and returns a matrix of results.
+
+# Keyword Arguments
+- `hermitian::Bool=true`: If `true`, return `real(...)` of each expectation value.
+
+# Returns
+- If `length(mpo) == length(mps)`: a scalar (real or complex depending on `hermitian`).
+- If `length(mpo) < length(mps)`: a vector of local expectation values over all valid placements.
+- If `mpsvector` is provided: a matrix where each row corresponds to one MPS.
 """
 function local_expvals(mps::MPS, mpo::MPO; hermitian::Bool = true)
     # We get the local dimension of the MPS and the MPO and we check that they are uniform

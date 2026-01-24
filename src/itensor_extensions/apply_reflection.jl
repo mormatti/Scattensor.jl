@@ -1,9 +1,12 @@
 """
-    apply_reflection(mps)
+    apply_reflection(mps::MPS) -> MPS
 
 Applies the pure reflection of a finite MPS with uniform local dimension.
 The pure reflection is defined as the operation that inverts 
 the order of the sites in the MPS, effectively reflecting it across the center.
+
+# Returns
+- A reflected MPS (a new object; the input is not mutated).
 
 # Example
     julia> sites = siteinds(3,4)

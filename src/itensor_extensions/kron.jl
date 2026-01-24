@@ -2,9 +2,14 @@
     kron(mps1::MPS, mps2::MPS) -> MPS
     kron(mpo1::MPO, mpo2::MPO) -> MPO
 
-Kronecker product of two MPS or MPO objects.
-The resulting MPS or MPO has the length equal to the sum of the lengths of the two inputs.
-It simply concatenates the tensors of the two MPS or MPO objects.
+Kronecker product (direct product) of two `MPS` or two `MPO` objects.
+
+This method extends `Base.kron` for tensor trains. The result is built by concatenating the site
+tensors of `train1` and `train2`, producing a train of length `length(train1) + length(train2)`.
+
+# Notes
+- This is a structural concatenation; it does not attempt to merge link indices between the two trains.
+- Useful for building product states/operators on longer chains.
 
 # Example
     julia> mps1 = random_mps(siteinds(3, 2))

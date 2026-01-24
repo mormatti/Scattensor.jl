@@ -1,12 +1,31 @@
-# TODO: improve this function, considering a method which does not implement compression (hard task).
-
 """
-    summation_local(mpo, L; convolution = identity, kwargs...)
+    summation_local(mpo::MPO, L::Integer; convolution=identity, pbc=false, cutoff=default_cutoff, maxdim=default_maxdim) -> MPO
 
-Creates a summation of an `MPO` with uniform local dimensions, extending it to a total length `L`.
-The `convolution` function is applied to the indices of the MPO, and it must return real or complex numbers.
-In other words, it computes the sum `ΣⱼcⱼAⱼ`, where `Aⱼ` are the MPO tensors and `cⱼ` are the coefficients returned by the `convolution` function.
-If the `convolution` function is not provided, it defaults to the identity function, which returns 1 for each index.
+Sum translated copies of a local MPO along a 1D chain.
+
+Given a local MPO `mpo` of length `L0`, this function builds an MPO of total length `L` that
+represents a linear combination of all translated placements of `mpo` within the length-`L` chain.
+Coefficients are provided by `convolution(j)` for the placement starting at position `j`.
+
+Conceptually, it computes `sum_j c_j * A_j`, where `A_j` is `mpo` inserted at position `j`.
+
+# Arguments
+- `mpo::MPO`: Local MPO to translate and sum.
+- `L::Integer`: Target total chain length.
+
+# Keyword Arguments
+- `convolution=identity`: Function `j -> c_j` returning a real/complex coefficient for each placement.
+  If left as `identity`, it is treated as the constant function `1`.
+- `pbc::Bool=false`: If `true`, also includes periodic boundary contributions by translating the last placement
+  using the translation MPO.
+- `cutoff=default_cutoff`, `maxdim=default_maxdim`: Compression parameters passed to `add`.
+
+# Returns
+- An `MPO` of length `L`.
+
+# Notes
+- This routine prints a small progress indicator while summing terms.
+- TODO in source: consider alternative constructions that reduce compression overhead.
 """
 function summation_local(mpo::MPO, L::Integer; convolution::Function = identity, pbc = false, cutoff = default_cutoff, maxdim = default_maxdim)
     if !is_uniform_localdim(mpo)

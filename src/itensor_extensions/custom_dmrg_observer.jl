@@ -1,5 +1,19 @@
 using ITensors
 
+"""
+    CustomObserver(tolerance)
+
+Simple DMRG observer that stops when energy converges.
+
+This `AbstractObserver` implementation can be passed to `ITensorMPS.dmrg` and will request early
+termination when the absolute change in energy between sweeps drops below `tolerance`.
+
+# Arguments
+- `tolerance`: Convergence threshold on `abs(energy - lastenergy)`.
+
+# Notes
+- This observer also prints a small progress message on the first sweep.
+"""
 mutable struct CustomObserver <: AbstractObserver
     lastenergy::Float64
     tolerance::Float64
