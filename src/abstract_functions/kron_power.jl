@@ -15,5 +15,3 @@ function kron_power(A, n::Integer)
         return result
     end
 end
-
-export kron_power

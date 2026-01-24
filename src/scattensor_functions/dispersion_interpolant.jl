@@ -85,5 +85,3 @@ function dispersion_interpolant(states; derivative = 0)
 
     _periodic_even_interpolant(K, E, derivative = derivative)
 end
-
-export dispersion_interpolant

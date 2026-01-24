@@ -24,5 +24,3 @@ function mps_from_vector(v::Vector, d::Int; cutoff = default_cutoff, maxdim = de
     truncate!(mps, cutoff = cutoff, maxdim = maxdim)
     return mps
 end
-
-export mps_from_vector

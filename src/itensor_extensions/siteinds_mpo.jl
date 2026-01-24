@@ -33,7 +33,6 @@ function siteinds_main(mpo::MPO)
     return list
 end
 
-export siteinds_main
 
 function siteinds_primed(mpo::MPO)
     v = siteinds(mpo)
@@ -46,4 +45,3 @@ function siteinds_primed(mpo::MPO)
     return list
 end
 
-export siteinds_primed

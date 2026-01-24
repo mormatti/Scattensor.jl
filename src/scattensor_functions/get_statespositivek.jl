@@ -15,5 +15,3 @@ Filter Bloch states by momentum, keeping those with nonnegative momentum `k ≥ 
 function get_statespositivek(states::Vector{<:BlochState})
     return filter(state -> momentum(state) >= 0, states)
 end
-
-export get_statespositivek

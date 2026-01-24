@@ -25,5 +25,3 @@ function apply_reflection(mps::MPS)
     truncate!(phi)
     return phi
 end
-
-export apply_reflection

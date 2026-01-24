@@ -46,5 +46,3 @@ Convenience overload of [`fourier_transform(M, N1, N2)`](@ref) using `N1 = size(
 function fourier_transform(M::Matrix)
     return fourier_transform(M, size(M, 1), size(M, 2))
 end
-
-export fourier_transform

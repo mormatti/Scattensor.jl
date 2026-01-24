@@ -23,5 +23,3 @@ function get_groundstate(states::Vector{<:BlochState})
     end
     return states[igs]
 end
-
-export get_groundstate

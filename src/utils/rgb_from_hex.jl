@@ -24,5 +24,3 @@ function hex_to_rgb(hex::String; scale_255 = false)::RGB
         return RGB(red(rgb), green(rgb), blue(rgb))
     end
 end
-
-export hex_to_rgb

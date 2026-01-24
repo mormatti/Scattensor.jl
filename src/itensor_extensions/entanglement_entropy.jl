@@ -23,5 +23,3 @@ function entanglement_entropy(mps::MPS)::Vector{Float64}
     Sv(j) = entanglement_entropy(mps, j)
     return [Sv(j) for j in 1:L-1]
 end
-
-export entanglement_entropy

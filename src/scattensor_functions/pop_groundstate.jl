@@ -23,5 +23,3 @@ function pop_groundstate!(states::Vector{<:BlochState})
     end
     return popat!(states, i0)
 end
-
-export pop_groundstate!

@@ -17,5 +17,3 @@ function complex_to_rgb(z::Complex)::RGB
     value = 1.0 - exp(-r)          # Map magnitude to value (you can adjust this for effect)
     return RGB(HSV(hue, saturation, value))
 end
-
-export complex_to_rgb

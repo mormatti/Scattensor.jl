@@ -188,5 +188,3 @@ function wannier_symmetric(
 
     return wopt, info
 end
-
-export wannier_symmetric

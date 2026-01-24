@@ -97,5 +97,3 @@ function plot_disprel(disprelvec::Vector{<:BlochState}, from::Real, to::Real; kw
 
     return Plots.scatter(klist, Elist; defaults..., kwargs...)
 end
-
-export plot_disprel

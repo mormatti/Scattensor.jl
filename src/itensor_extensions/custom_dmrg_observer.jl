@@ -31,6 +31,3 @@ end
 function special_foo(x)
     print(x)
 end
-
-export CustomObserver
-export special_foo

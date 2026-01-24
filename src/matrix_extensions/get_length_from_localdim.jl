@@ -44,5 +44,3 @@ function get_length_from_localdim(matrix::AbstractMatrix, d::Integer)::Integer
     end
     return get_length_from_localdim(N, d)
 end
-
-export get_length_from_localdim

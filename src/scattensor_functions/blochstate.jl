@@ -22,8 +22,6 @@ mutable struct BlochState{T}
     koverpi::Real # The momentum of the Bloch state (/π so it can be represented as Rational)
 end
 
-export BlochState
-
 """
     wavefunction(bs::BlochState) -> Any
 
@@ -31,16 +29,12 @@ Return the underlying representation stored in `bs.data` (e.g. a coefficient vec
 """
 wavefunction(bs::BlochState) = bs.data
 
-export wavefunction
-
 """
     energy(bs::BlochState) -> Real
 
 Return the energy eigenvalue stored in `bs.energy`.
 """
 energy(bs::BlochState)::Real = bs.energy
-
-export energy
 
 """
     momentum(bs::BlochState) -> Real
@@ -51,5 +45,3 @@ Note: no wrapping to a Brillouin zone is performed; the returned value follows w
 convention was used to set `koverpi`.
 """
 momentum(bs::BlochState)::Real = π * bs.koverpi
-
-export momentum

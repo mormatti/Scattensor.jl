@@ -101,7 +101,6 @@ function smatrix_real_space(d::Integer, H::MPO, ψ0::MPS, w::MPO, t::Real, N::In
     return S
 end
 
-export smatrix_real_space
 
 """
     smatrix_element_momentum_space(S, k1, k2, k1′, k2′) -> Complex
@@ -148,7 +147,6 @@ Alias for [`smatrix_element_momentum_space`](@ref).
 smatrix_momentum_space(S::Array, k1::Real, k2::Real, k1′::Real, k2′::Real) =
     smatrix_element_momentum_space(S, k1, k2, k1′, k2′)
 
-export smatrix_momentum_space
 
 """
     smatrix_real_space_tdvp(d, H, ψ0, w, t, χmax) -> Array{ComplexF64,4}
@@ -236,7 +234,6 @@ function smatrix_real_space_tdvp(
     return S
 end
 
-export smatrix_real_space_tdvp
 
 """
     smatrix_expansion_real_space_tdvp(d, H, ψ0, w, χmax, t) -> Array{ComplexF64,4}
@@ -358,7 +355,6 @@ function smatrix_element_momentum_space_tdvp(A, k1, k2, k1′, k2′)
     return result
 end
 
-export smatrix_element_momentum_space_tdvp
 
 """
     two_particle_wavefunction(ψ, ψ0, W, d; maxdim=100) -> Matrix{ComplexF64}

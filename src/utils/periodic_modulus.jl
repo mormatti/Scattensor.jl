@@ -26,8 +26,6 @@ function ↻(n::Real, m::Real)::Real
     end
 end
 
-export ↻
-
 """
     ZZ(n, p) -> Real
 
@@ -57,5 +55,3 @@ function ZZ(n::Real, p::Real)::Real
         return Float64(ret)
     end
 end
-
-export ZZ

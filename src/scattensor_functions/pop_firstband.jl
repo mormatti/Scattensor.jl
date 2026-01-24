@@ -38,5 +38,3 @@ function pop_firstband!(states::Vector{BlochStateType}) where BlochStateType <: 
         return band
     end
 end
-
-export pop_firstband!

@@ -10,5 +10,3 @@ function print_with_color(text::String, color::RGB)
     b = round(Int, blue(color) * 255)
     print("\e[1m\e[38;2;$r;$g;$b;249m", text)
 end
-
-export print_with_color

@@ -24,5 +24,3 @@ function mpo_from_matrix(matrix::Matrix, d::Int, cutoff::Real, maxdim::Int)::MPO
     truncate!(mpo, cutoff = cutoff, maxdim = maxdim)
     return mpo
 end
-
-export mpo_from_matrix

@@ -18,5 +18,3 @@ function plot_complex_colormap(Z::Matrix{<:Complex}; max_opacity = 1.0)
     color_image = reshape(color_matrix, size(Z)...)
     Plots.heatmap(color_image, aspect_ratio=:equal, axis=nothing, xlims=(1/2, size(Z, 2) + 1/2), ylims=(1/2, size(Z, 1) + 1/2))
 end
-
-export plot_complex_colormap

@@ -56,5 +56,3 @@ function local_exp_value(
     end
     return vals
 end
-
-export local_exp_value

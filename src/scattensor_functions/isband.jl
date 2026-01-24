@@ -21,5 +21,3 @@ function isband(states::Vector{BlochStateType}) where BlochStateType <: BlochSta
         return true
     end
 end
-
-export isband

@@ -24,5 +24,4 @@ function operator_identity(::Type{MPO}, d::Integer, L::Integer)
     return MPO(W)
 end
 
-export operator_identity
 

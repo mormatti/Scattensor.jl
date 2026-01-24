@@ -107,5 +107,3 @@ function tdvp_time_evolution!(data::Dict, H::MPO, ψ::MPS, dt::Real, Δt::Real, 
 
     data[:simulationtime] = simulationtime
 end
-
-export tdvp_time_evolution!

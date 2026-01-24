@@ -19,5 +19,3 @@ function angle_to_rgb(angle::Float64)::RGB
     hsl_color = HSL(hue_deg, 1.0, 0.5)
     return RGB(hsl_color)
 end
-
-export angle_to_rgb

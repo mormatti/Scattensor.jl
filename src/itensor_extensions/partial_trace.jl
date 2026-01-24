@@ -71,5 +71,3 @@ function _partial_trace_right(mpo::MPO, j1::Integer)
     tensorlist[end] = mpo[j1] * A
     return MPO(tensorlist)
 end
-
-export partial_trace

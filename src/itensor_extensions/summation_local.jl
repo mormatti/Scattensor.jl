@@ -55,5 +55,3 @@ function summation_local(mpo::MPO, L::Integer; convolution::Function = identity,
     end
     return finalsum
 end
-
-export summation_local

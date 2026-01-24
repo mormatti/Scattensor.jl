@@ -240,5 +240,3 @@ function dispersion_relation(H::MPO; nlevels::Int = 3, kwargs...)
     print("Computation done.")
     return disprelvec
 end
-
-export dispersion_relation

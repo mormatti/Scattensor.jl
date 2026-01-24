@@ -28,5 +28,3 @@ function apply_translation(mps::MPS; moveright::Bool = true, kwargs...)
     end
     return mpscopy
 end
-
-export apply_translation

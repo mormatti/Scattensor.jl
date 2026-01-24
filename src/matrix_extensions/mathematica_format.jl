@@ -12,5 +12,3 @@ function mathematica_format(matrix::Matrix{<:Real})
     formatted_rows = ["{" * join(row, ", ") * "}" for row in eachrow(matrix)]
     return "{" * join(formatted_rows, ", ") * "}"
 end
-
-export mathematica_format

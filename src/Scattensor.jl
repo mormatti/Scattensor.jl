@@ -15,6 +15,31 @@ module Scattensor
     using Logging
     using LaTeXStrings
 
+    # Public API
+    export kron_power
+    export operator_identity, operator_translation, operator_reflection
+    export apply_translation, apply_reflection
+    export summation_local
+    export adjoint_mpo, mpo_from_matrix, matrix_from_mpo, mps_from_vector
+    export siteinds_main, siteinds_primed
+    export isband, get_groundstate, pop_groundstate!, get_firstband, pop_firstband!
+    export get_statesabove, get_statesbelow, get_statespositivek
+    export dispersion_relation, dispersion_interpolant, plot_disprel
+    export BlochState, wavefunction, energy, momentum
+    export local_exp_value
+    export fourier_transform
+    export wannier_symmetric
+    export tdvp_time_evolution!
+    export smatrix_real_space, smatrix_momentum_space, smatrix_real_space_tdvp, smatrix_element_momentum_space_tdvp
+    export entanglement_entropy, partial_trace, local_expvals, insert_local
+    export get_length_from_localdim, mathematica_format
+    export plot_complex_colormap
+    export print_with_color
+    export angle_to_rgb, complex_to_rgb, hex_to_rgb
+    export ↻, ZZ
+    export CustomObserver
+    export special_foo
+
     # Abstract functions
     include("abstract_functions/kron_power.jl")
     include("abstract_functions/operator_identity.jl")

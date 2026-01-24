@@ -60,5 +60,3 @@ function local_expvals(mpsvector::Vector{MPS}, mpo::MPO; hermitian::Bool = true)
     end
     return matrix
 end
-
-export local_expvals

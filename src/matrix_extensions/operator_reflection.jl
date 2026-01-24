@@ -44,5 +44,3 @@ function operator_reflection(::Type{<:SparseMatrixCSC}, d::Integer, L::Integer):
     end
     return R
 end
-
-export operator_reflection

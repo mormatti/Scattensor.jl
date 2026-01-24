@@ -39,5 +39,3 @@ function get_firstband(states::Vector{BlochStateType}) where BlochStateType <: B
         return band
     end
 end
-
-export get_firstband

@@ -25,5 +25,3 @@ function insert_local(L1::Integer, mpo::MPO, L2::Integer)
         return kron(idm(L1), kron(mpo, idm(L2)))
     end
 end 
-
-export insert_local
