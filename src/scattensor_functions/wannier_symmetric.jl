@@ -27,13 +27,20 @@ assumes you provide:
 # Notes
 - This routine currently enforces that `state.koverpi isa Rational` to avoid floating-point momentum issues.
 - Only nonnegative momenta are accepted; `-k` components are reconstructed using the inferred parity.
+- `impose_real = true` (default) fixes the global phase and projects the result onto real
+  vectors (legitimate for an isolated non-degenerate band, by Kohn's theorem): the spread
+  functional is nearly flat along phase directions, so without this the output carries a
+  run-dependent spurious complex structure that breaks the PK (parity × time-reversal)
+  symmetry of wave packets built from the resulting creation operator. Vector
+  representations only; `info["real_weight"]` records the projected weight.
 """
 function wannier_symmetric(
     bandstates::Vector{<:BlochState}, # The states of the band,
     gsenergy::Real, # The groundstate energy of the system
     localhamop::Function, # The local hamiltonian of the system centered in the site of parity reflection
     parityop::Function, # The reflection operator of the system
-    innerprod::Function # The inner product between Bloch state wavefunctions
+    innerprod::Function; # The inner product between Bloch state wavefunctions
+    impose_real::Bool = true # Project the optimized Wannier onto real vectors (Kohn)
     )
 
     info = Dict{String, Any}()
@@ -182,6 +189,24 @@ function wannier_symmetric(
 
     wopt = sum(phases[k] * Ψ[k] for k in all_ks)
     wopt = wopt / norm(wopt)
+
+    # Kohn: for an isolated non-degenerate band the MLWF can be chosen real and
+    # reflection-symmetric. The spread optimum is nearly flat along phase
+    # directions that leave a spurious complex structure in wopt (run-to-run
+    # dependent); project it out. Only implemented for vector representations.
+    if impose_real
+        if wopt isa AbstractVector{<:Number}
+            θs = 0:0.0005:π
+            θ = θs[argmin([norm(imag.(exp(im * t) .* wopt)) for t in θs])]
+            realweight = 1 - norm(imag.(exp(im * θ) .* wopt))^2
+            info["real_weight"] = realweight
+            println("Imposing reality (impose_real = true): real-part weight after phase fix = $(round(realweight, digits = 6)).")
+            wopt = real.(exp(im * θ) .* wopt)
+            wopt = ComplexF64.(wopt ./ norm(wopt))
+        else
+            @warn "impose_real is only implemented for vector representations; skipping."
+        end
+    end
 
     print("Wannier function computed.")
     println("")
