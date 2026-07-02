@@ -5,3 +5,10 @@
 /Manifest.toml
 img/
 *.jld2
+# OS cruft
+.DS_Store
+
+# heavy outputs (images, plots)
+plots/
+*.png
+*.gif

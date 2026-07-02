@@ -165,9 +165,9 @@ on model and parameters.
 # Warnings
 - This routine is marked as TODO in the source: it is not yet a pure/robust TN projection method.
 """
-function dispersion_relation(H::MPO; nlevels::Int = 3, kwargs...)
+function dispersion_relation(H::MPO; nlevels::Int = 3, maxdim = [50,100,200,400,500], cutoff = 1e-10, tol = 1e-8, kwargs...)
     
-    dmrgargs = (nsweeps = 1000, maxdim = [50,100,200,400,500], cutoff = [1e-10], observer = CustomObserver(1e-8))
+    dmrgargs = (nsweeps = 1000, maxdim = maxdim, cutoff = [cutoff], observer = CustomObserver(tol))
 
     # Define parameters and operators
     sites = siteinds_main(H)

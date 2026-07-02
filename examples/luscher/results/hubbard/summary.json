@@ -1,0 +1,15 @@
+{
+  "model": "HubbardParams",
+  "Ksectors": [0.0],
+  "eps_fit_coeffs": [3.0000000000001528, -1.9999999999998097, 2.252980522034745e-13, 1.1199125200849567e-13, 6.965131507818926e-14],
+  "golden_ratio_measured": null,
+  "params": "HubbardParams(1.0, 4.0, 3.0, 10.0)",
+  "Ls": [6.0, 7.0, 8.0, 9.0],
+  "rmax_dispersion": 4.0,
+  "scenario": "hubbard",
+  "global_fit_cost": 0.00019128843350889004,
+  "m1_gap": 1.00000000000075,
+  "golden_ratio_exact": 1.6180339887,
+  "n_phase_points": 14.0,
+  "global_fit_theta": [1.5975878089802649, 0.998987810033586, -0.3414036651322422, 0.009584688869731978]
+}

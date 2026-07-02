@@ -1,0 +1,15 @@
+{
+  "model": "IsingParams",
+  "Ksectors": [0.0],
+  "eps_fit_coeffs": [8.735249221686741, -1.789921699389629, -0.08913826144918735, -0.00942613553023903, -0.0012101960484893087],
+  "golden_ratio_measured": null,
+  "params": "IsingParams(1.0, 4.0, 1.0)",
+  "Ls": [8.0, 10.0, 12.0, 14.0],
+  "rmax_dispersion": 4.0,
+  "scenario": "disordered",
+  "global_fit_cost": 0.0009617886632471872,
+  "m1_gap": 6.845552929269197,
+  "golden_ratio_exact": 1.6180339887,
+  "n_phase_points": 21.0,
+  "global_fit_theta": [1.8747728732316986, 0.02800671914009541, -0.07900521170017079, 0.017023022403146848]
+}
