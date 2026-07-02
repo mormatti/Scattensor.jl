@@ -48,7 +48,8 @@ end
 
 function local_expvals(mps::MPS, matrix::Matrix; hermitian::Bool = true)
     mpo = mpo_from_matrix(matrix, get_uniform_localdim(mps))
-    replace_siteinds!(mpo, siteinds(mps))
+    # NOTE: do not replace site indices here — the MPO is local (length ≤ length(mps));
+    # the MPO method extends it per placement and replaces the indices there.
     return local_expvals(mps, mpo, hermitian = hermitian)
 end
 
