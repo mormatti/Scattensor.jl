@@ -38,6 +38,13 @@ module Scattensor
     export angle_to_rgb, complex_to_rgb, hex_to_rgb
     export ↻, ZZ
     export CustomObserver
+    # Lüscher finite-volume scattering analysis
+    export Level, compute_momentum_spectrum, levels_in_sector, momentum_sectors, vacuum_energy
+    export FourierDispersion, epsilon, depsilon, fit_dispersion_fourier, one_particle_band
+    export E_free, free_two_particle_energies, TwoParticleMatch, match_two_particle_levels
+    export solve_relative_momentum, PhaseShiftPoint, extract_phase_shift, unwrap_phase_shifts
+    export time_delay_points, time_delay_exact, keep_lowest_per_sector, phase_points_for_sector
+    export delta_poly, predicted_levels, spectral_mismatch, fit_phase_shift_global
 
     # Abstract functions
     include("abstract_functions/kron_power.jl")
@@ -104,6 +111,7 @@ module Scattensor
     include("scattensor_functions/pop_firstband.jl")
     include("scattensor_functions/pop_groundstate.jl")
     include("scattensor_functions/wannier_symmetric.jl")
+    include("scattensor_functions/luscher.jl")
     include("scattensor_functions/tdvp_time_evolution.jl")
 
 end # module Scattensor
