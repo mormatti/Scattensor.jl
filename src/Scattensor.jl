@@ -53,6 +53,7 @@ module Scattensor
     export wrap_mod_pi, ArctanFit, fit_arctan
     export embed_operator, bulk_couplings, wannier_bands, energy_variance
     export pair_couplings, pair_blocks, two_particle_spectrum
+    export composite_pair_cross, composite_pair_blocks, friedrichs_lee, resonance_parameters
     export mps_transition_operator, mps_apply_window, deformed_hamiltonian_mpo
     export dmrg_seeds, mps_bulk_couplings
     export tdvp_checkpoint
@@ -129,6 +130,7 @@ module Scattensor
     include("scattensor_functions/trap.jl")
     include("scattensor_functions/bulk_bands.jl")
     include("scattensor_functions/pair_bands.jl")
+    include("scattensor_functions/composite_channels.jl")
     include("scattensor_functions/fits.jl")
     include("scattensor_functions/tdvp_time_evolution.jl")
 
