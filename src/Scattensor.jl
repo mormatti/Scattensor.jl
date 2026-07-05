@@ -52,6 +52,8 @@ module Scattensor
     export ssd_weight, parabolic_weight, deformed_hamiltonian, trap_seeds, effective_pair
     export wrap_mod_pi, ArctanFit, fit_arctan
     export embed_operator, bulk_couplings, wannier_bands, energy_variance
+    export mps_transition_operator, mps_apply_window, deformed_hamiltonian_mpo
+    export dmrg_seeds, mps_bulk_couplings
     export tdvp_checkpoint
 
     # Abstract functions
@@ -101,6 +103,7 @@ module Scattensor
     include("itensor_extensions/siteinds_mpo.jl")
     include("itensor_extensions/substitute_siteinds.jl")
     include("itensor_extensions/summation_local.jl")
+    include("itensor_extensions/spectroscopy_mps.jl")
 
     # Scattensor functions (to check here...)
     include("scattensor_functions/blochstate.jl")

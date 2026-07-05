@@ -10,4 +10,5 @@ using Scattensor
     include("test_trap.jl")
     include("test_fits.jl")
     include("test_bulk_bands.jl")
+    include("test_spectroscopy_mps.jl")
 end
