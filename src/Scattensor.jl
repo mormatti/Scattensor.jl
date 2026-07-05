@@ -48,8 +48,8 @@ module Scattensor
     export delta_poly, predicted_levels, spectral_mismatch, fit_phase_shift_global
 
     export SymmetrySector, symmetry_blocks, momentum_basis, sector_hamiltonian, sector_spectrum
-    export transition_trace_norm, localizability, support_size, optimal_creator, cyclic_shift
-    export ssd_weight, deformed_hamiltonian, trap_seeds, effective_pair
+    export transition_trace_norm, transition_operator, localizability, support_size, optimal_creator, cyclic_shift
+    export ssd_weight, parabolic_weight, deformed_hamiltonian, trap_seeds, effective_pair
     export wrap_mod_pi, ArctanFit, fit_arctan
     export embed_operator, bulk_couplings, wannier_bands, energy_variance
     export tdvp_checkpoint

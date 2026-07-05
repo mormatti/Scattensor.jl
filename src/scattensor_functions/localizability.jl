@@ -107,6 +107,30 @@ function support_size(ψ::AbstractVector, Ω::AbstractVector; d::Integer = 2)
 end
 
 """
+    transition_operator(ψ, Ω, ℓ; d=2, site=nothing) -> Matrix
+
+The reduced transition operator `A = Tr_rest |ψ⟩⟨Ω|` on an `ℓ`-site window
+(placement via `site` as in [`transition_trace_norm`](@ref)), materialized
+as a dense `d^ℓ × d^ℓ` matrix (requires `ℓ ≤ L/2`).
+
+As a creation operator, `A` is the \"pure\" alternative to the unitary
+Procrustes maximizer of [`optimal_creator`](@ref): `A|Ω⟩` reproduces the
+local component of `|ψ⟩` with minimal multi-particle contamination (it is
+built FROM the target), whereas the unitary attains the maximal residue but
+spreads weight over the orthogonal complement. Use `A` for
+[`bulk_couplings`](@ref) frames; use the unitary for quench loading.
+"""
+function transition_operator(ψ::AbstractVector, Ω::AbstractVector, ℓ::Integer;
+                             d::Integer = 2, site = nothing)
+    L = get_length_from_localdim(length(ψ), d)
+    m = d^(L - ℓ)
+    d^ℓ <= m || error("transition_operator requires ℓ ≤ L/2 (got ℓ = $ℓ, L = $L)")
+    Mψ = reshape(_window_to_end(ψ, ℓ, site, d), d^ℓ, m)
+    MΩ = reshape(_window_to_end(Ω, ℓ, site, d), d^ℓ, m)
+    Matrix(Mψ * MΩ')
+end
+
+"""
     optimal_creator(ψ, Ω, ℓ; d=2, site=nothing) -> (φstar, residue)
 
 The Procrustes maximizer on the `ℓ`-site support: with

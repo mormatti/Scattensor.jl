@@ -18,30 +18,50 @@
 
 The sine-square-deformation weight `V(j) = 1 − cos(2π (j − center)/L)`:
 smooth on the ring, zero (quadratic) at `center`, maximal at the antipode.
+Natural for PBC traps.
 """
 ssd_weight(L::Integer; center::Integer = L ÷ 2) = j -> 1.0 - cos(2π * (j - center) / L)
 
 """
-    deformed_hamiltonian(H0, d, L; weight = ssd_weight(L), T = nothing) -> SparseMatrixCSC
+    parabolic_weight(L; center = (L + 1) ÷ 2, amp = 2.0) -> Function
 
-Build `H' = Σ_{j=0}^{L-1} weight(j) · h_j` from the local Hamiltonian block
-`H0` (acting on `L0 = log_d(size(H0,1))` sites), placing `h_j` at every site
-of the periodic chain. This is the "trap": a modulation of the local
-Hamiltonian density, NOT an external potential.
+The open-chain trap weight `V(j) = amp · ((j − center)/(L/2))²`: zero
+(quadratic) at `center`, growing toward the walls. Natural for OBC traps
+(the PBC-smoothness of [`ssd_weight`](@ref) is not needed without a ring).
+"""
+parabolic_weight(L::Integer; center::Integer = (L + 1) ÷ 2, amp::Real = 2.0) =
+    j -> amp * ((j - center) / (L / 2))^2
 
-`T` (the translation operator) can be passed to avoid rebuilding it.
+"""
+    deformed_hamiltonian(H0, d, L; weight = ssd_weight(L), pbc = true, T = nothing)
+        -> SparseMatrixCSC
+
+Build `H' = Σ_j weight(j) · h_j` from the local Hamiltonian block `H0`
+(acting on `L0 = log_d(size(H0,1))` sites), with `h_j` starting at site `j`
+(1-based). This is the "trap": a modulation of the local Hamiltonian
+density, NOT an external potential.
+
+With `pbc = true` the blocks wrap around the ring (translation-conjugated
+placement); with `pbc = false` only the `L − L0 + 1` fitting positions are
+used — combine with [`parabolic_weight`](@ref) for the open-chain trap.
+`T` can be passed to avoid rebuilding the translation operator (PBC only).
 The result is Hermitized against accumulation of numerical noise.
 """
 function deformed_hamiltonian(H0::AbstractMatrix, d::Integer, L::Integer;
-                              weight = ssd_weight(L), T::Union{Nothing, AbstractMatrix} = nothing)
+                              weight = ssd_weight(L), pbc::Bool = true,
+                              T::Union{Nothing, AbstractMatrix} = nothing)
     L0 = get_length_from_localdim(size(H0, 1), d)
-    Top = T === nothing ? operator_translation(SparseMatrixCSC, d, L) : T
-    H0ext = kron(sparse(H0), operator_identity(SparseMatrixCSC, d^(L - L0)))
     Hprime = spzeros(ComplexF64, d^L, d^L)
-    Hcur = SparseMatrixCSC{ComplexF64}(H0ext)
-    for j in 0:(L - 1)
-        Hprime += weight(j) * Hcur
-        Hcur = Top * Hcur * Top'
+    for j in 1:(L - L0 + 1)
+        Hprime += weight(j) * embed_operator(H0, d, L, j)
+    end
+    if pbc
+        Top = T === nothing ? operator_translation(SparseMatrixCSC, d, L) : T
+        Hcur = SparseMatrixCSC{ComplexF64}(embed_operator(H0, d, L, L - L0 + 1))
+        for j in (L - L0 + 2):L
+            Hcur = Top * Hcur * Top'                 # wrap terms across the boundary
+            Hprime += weight(j) * Hcur
+        end
     end
     (Hprime + Hprime') / 2
 end

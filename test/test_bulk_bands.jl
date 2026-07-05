@@ -31,23 +31,26 @@ using SparseArrays, LinearAlgebra
     To = operator_translation(SparseMatrixCSC, d, Lo)          # only to build the trap
     Htrap = deformed_hamiltonian(H0, d, Lo; T = To)
     _, seeds = trap_seeds(Htrap, 2)
-    # dressed 3-site flip, extracted WHERE THE SEED LIVES (trap center)
-    φ, _ = optimal_creator(Vector{ComplexF64}(normalize(seeds[2])), Ω, 3; site = Lo ÷ 2 - 1)
+    # dressed 3-site flip, extracted WHERE THE SEED LIVES (window scan)
+    seed = Vector{ComplexF64}(normalize(seeds[2]))
+    seed -= dot(Ω, seed) * Ω; normalize!(seed)
+    tns = [transition_trace_norm(seed, Ω, 3; site = s) for s in 1:Lo-2]
+    φ, _ = optimal_creator(seed, Ω, 3; site = argmax(tns))
 
     S, Hc = bulk_couplings(Ho, Ω, [φ], d; rmax = 3)
     @test abs(S[1, 1, 4]) > 0.5                                # normalized-ish at r = 0
     @test abs(S[1, 1, 1]) < abs(S[1, 1, 3])                    # overlaps decay with |r|
     ks, bands = wannier_bands(S, Hc; nk = 100)
 
-    # compare at the exact momenta: interpolate the reconstructed band
+    # compare at the exact momenta: RELATIVE error (band values are O(h))
     errs = Float64[]
     for (k, E) in ref
         i = argmin(abs.(ks .- k))
         isnan(bands[i, 1]) && continue
-        push!(errs, abs(bands[i, 1] - E))
+        push!(errs, abs(bands[i, 1] - E) / E)
     end
     @test length(errs) >= 5
-    @test maximum(errs) < 0.05                                  # band shape to a few %
+    @test maximum(errs) < 0.03          # single-species frame: ≲2% across the zone
     # variance certificate: the reconstructed band is far below the 2-particle
     # continuum, so the corresponding trapped seed has small energy variance
     @test energy_variance(Ho, normalize(Vector{ComplexF64}(seeds[1]))) <
