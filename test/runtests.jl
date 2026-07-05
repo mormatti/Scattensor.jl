@@ -5,4 +5,8 @@ using Scattensor
 
 @testset "Scattensor.jl" begin
     include("test_matrix_backend.jl")
+    include("test_sectors.jl")
+    include("test_localizability.jl")
+    include("test_trap.jl")
+    include("test_fits.jl")
 end
