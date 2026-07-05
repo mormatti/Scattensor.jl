@@ -52,6 +52,7 @@ module Scattensor
     export ssd_weight, parabolic_weight, deformed_hamiltonian, trap_seeds, effective_pair
     export wrap_mod_pi, ArctanFit, fit_arctan
     export embed_operator, bulk_couplings, wannier_bands, energy_variance
+    export pair_couplings, pair_blocks, two_particle_spectrum
     export tdvp_checkpoint
 
     # Abstract functions
@@ -124,6 +125,7 @@ module Scattensor
     include("scattensor_functions/localizability.jl")
     include("scattensor_functions/trap.jl")
     include("scattensor_functions/bulk_bands.jl")
+    include("scattensor_functions/pair_bands.jl")
     include("scattensor_functions/fits.jl")
     include("scattensor_functions/tdvp_time_evolution.jl")
 
