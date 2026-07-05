@@ -48,9 +48,10 @@ module Scattensor
     export delta_poly, predicted_levels, spectral_mismatch, fit_phase_shift_global
 
     export SymmetrySector, symmetry_blocks, momentum_basis, sector_hamiltonian, sector_spectrum
-    export transition_trace_norm, localizability, support_size, optimal_creator
+    export transition_trace_norm, localizability, support_size, optimal_creator, cyclic_shift
     export ssd_weight, deformed_hamiltonian, trap_seeds, effective_pair
     export wrap_mod_pi, ArctanFit, fit_arctan
+    export embed_operator, bulk_couplings, wannier_bands, energy_variance
     export tdvp_checkpoint
 
     # Abstract functions
@@ -122,6 +123,7 @@ module Scattensor
     include("scattensor_functions/sectors.jl")
     include("scattensor_functions/localizability.jl")
     include("scattensor_functions/trap.jl")
+    include("scattensor_functions/bulk_bands.jl")
     include("scattensor_functions/fits.jl")
     include("scattensor_functions/tdvp_time_evolution.jl")
 

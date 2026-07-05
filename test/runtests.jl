@@ -9,4 +9,5 @@ using Scattensor
     include("test_localizability.jl")
     include("test_trap.jl")
     include("test_fits.jl")
+    include("test_bulk_bands.jl")
 end
