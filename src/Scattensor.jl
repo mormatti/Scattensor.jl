@@ -14,6 +14,7 @@ module Scattensor
     using Colors
     using Logging
     using LaTeXStrings
+    using Serialization
 
     # Public API
     export kron_power
@@ -45,6 +46,12 @@ module Scattensor
     export solve_relative_momentum, PhaseShiftPoint, extract_phase_shift, unwrap_phase_shifts
     export time_delay_points, time_delay_exact, keep_lowest_per_sector, phase_points_for_sector
     export delta_poly, predicted_levels, spectral_mismatch, fit_phase_shift_global
+
+    export SymmetrySector, symmetry_blocks, momentum_basis, sector_hamiltonian, sector_spectrum
+    export transition_trace_norm, localizability, support_size, optimal_creator
+    export ssd_weight, deformed_hamiltonian, trap_seeds, effective_pair
+    export wrap_mod_pi, ArctanFit, fit_arctan
+    export tdvp_checkpoint
 
     # Abstract functions
     include("abstract_functions/kron_power.jl")
@@ -112,6 +119,10 @@ module Scattensor
     include("scattensor_functions/pop_groundstate.jl")
     include("scattensor_functions/wannier_symmetric.jl")
     include("scattensor_functions/luscher.jl")
+    include("scattensor_functions/sectors.jl")
+    include("scattensor_functions/localizability.jl")
+    include("scattensor_functions/trap.jl")
+    include("scattensor_functions/fits.jl")
     include("scattensor_functions/tdvp_time_evolution.jl")
 
 end # module Scattensor
